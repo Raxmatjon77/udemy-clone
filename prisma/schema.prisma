@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
+  output   = "../node_modules/.prisma/client"
 }
 
 datasource db {
@@ -155,8 +155,10 @@ model RefreshToken {
   id        String   @id @default(uuid())
   userId    String
   token     String
-  expiresAt DateTime
   user      User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId,id], name: "refresh_token_user_uq")
+
 }
 
 model Star {
