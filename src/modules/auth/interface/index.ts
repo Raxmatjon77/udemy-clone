@@ -1,2 +1,2 @@
-export * from './user-signup.interface'
-export * from './user-signin.interface'
+export * from "./user-signup.interface";
+export * from "./user-signin.interface";

@@ -1,8 +1,14 @@
-import { IsEnum, IsNotEmpty, IsOptional, IsString, Length, Min,  } from 'class-validator';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  Length,
+} from "class-validator";
 import { UserSignupRequest } from "../interface";
-import {Role} from "@prisma/client";
+import { Role } from "@prisma/client";
 
-export  class UserSignupDto implements UserSignupRequest {
+export class UserSignupDto implements UserSignupRequest {
   @IsString()
   @IsNotEmpty()
   email: string;

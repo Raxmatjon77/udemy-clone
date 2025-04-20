@@ -1,0 +1,7 @@
+.git/
+.idea/
+.vscode/
+
+dist/
+prisma/
+**/.gitlab-ci.yml

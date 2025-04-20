@@ -3,45 +3,40 @@ import {
   Controller,
   HttpCode,
   Post,
-  UseGuards,
-  Req,
   HttpStatus,
-  Inject,
   Injectable,
-  UseInterceptors,
-} from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { UserSigninDto, UserSignupDto } from './dto';
-import { Tokens } from './types';
-import { UserSigninResponse, UserSignupResponse } from './interface';
-// import { RequestWithUser } from './types/express-request.interface'
-// import { VerivyUserInterceptor } from 'src/common/interceptors/verify-user.interceptor'
+} from "@nestjs/common";
+import { AuthService } from "./auth.service";
+import { UserSigninDto, UserSignupDto } from "./dto";
+import { UserSigninResponse, UserSignupResponse } from "./interface";
 
 @Injectable()
 @Controller({
-  path: 'auth',
-  version: '1',
+  path: "auth",
+  version: "1",
 })
 export class AuthController {
-  constructor(private authService: AuthService) {}
-
-  @Post('/signup')
-  @HttpCode(HttpStatus.CREATED)
-  SignUp(@Body() dto: UserSignupDto): Promise<UserSignupResponse> {
-    console.log('dto: ', dto);
-    return this.authService.SignUp(dto);
+  readonly #_service: AuthService;
+  constructor(service: AuthService) {
+    this.#_service = service;
   }
 
-  @Post('/signin')
+  @Post("/signup")
+  @HttpCode(HttpStatus.CREATED)
+  SignUp(@Body() dto: UserSignupDto): Promise<UserSignupResponse> {
+    console.log("dto: ", dto);
+    return this.#_service.SignUp(dto);
+  }
+
+  @Post("/signin")
   @HttpCode(HttpStatus.OK)
   SignIn(@Body() dto: UserSigninDto): Promise<UserSigninResponse> {
-    return this.authService.SignIn(dto);
+    return this.#_service.SignIn(dto);
   }
 
   // @Post('logout')
-  // @UseGuards(AuthGuard('jwt'))
   // @HttpCode(HttpStatus.NO_CONTENT)
-  // logout(@Req() req: RequestWithUser) {
+  // logout() {
   //   console.log('user', req.user);
   //   const userId = req.user.sub;
   //   return this.authService.logout(userId);

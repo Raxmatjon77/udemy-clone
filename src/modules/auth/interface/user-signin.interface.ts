@@ -1,4 +1,3 @@
-
 export declare interface UserSigninRequest {
   email: string;
   password: string;
