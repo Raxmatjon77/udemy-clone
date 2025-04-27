@@ -6,16 +6,18 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
-import * as bcrypt from "bcrypt";
 import { Tokens } from "./types/";
 import { JwtService } from "@nestjs/jwt";
 import { Cache } from "cache-manager";
 import {
+  UserLogoutInterface,
+  UserRefreshRequestInterface,
   UserSigninRequest,
   UserSigninResponse,
   UserSignupRequest,
   UserSignupResponse,
 } from "./interface";
+import { hash, compare } from "src/helpers";
 
 @Injectable()
 export class AuthService {
@@ -32,10 +34,11 @@ export class AuthService {
     this.#_cashe = cashe;
   }
 
-  async SignUp(dto: UserSignupRequest): Promise<UserSignupResponse> {
+  async signUp(dto: UserSignupRequest): Promise<UserSignupResponse> {
     const existuser = await this.#_prisma.user.findUnique({
       where: {
         email: dto.email,
+        deletedAt: null,
       },
     });
 
@@ -45,11 +48,11 @@ export class AuthService {
       throw new BadRequestException("User with this email is already exist !");
     }
 
-    const hash = this.hashdata(dto.password);
+    const hashedPassword = await hash(dto.password);
     const newUser = await this.#_prisma.user.create({
       data: {
         email: dto.email,
-        password: hash,
+        password: hashedPassword,
         role: dto.role,
         name: dto.name,
       },
@@ -57,9 +60,9 @@ export class AuthService {
 
     console.log("new user", newUser);
 
-    const tokens = await this.getTokens(newUser.id, newUser.email);
+    const tokens = await this.#_getTokens(newUser.id, newUser.email);
     await this.#_createRtHash(newUser.id, tokens.refresh_token);
-    
+
     return {
       id: newUser.id,
       access_token: tokens.access_token,
@@ -67,10 +70,11 @@ export class AuthService {
     };
   }
 
-  async SignIn(dto: UserSigninRequest): Promise<UserSigninResponse> {
+  async signIn(dto: UserSigninRequest): Promise<UserSigninResponse> {
     const user = await this.#_prisma.user.findUnique({
       where: {
         email: dto.email,
+        deletedAt: null,
       },
       select: {
         id: true,
@@ -84,7 +88,7 @@ export class AuthService {
 
     console.log(user);
 
-    const passwordMatches = await bcrypt.compare(dto.password, user.password);
+    const passwordMatches = await compare(dto.password, user.password);
 
     console.log("compare ", passwordMatches);
 
@@ -92,8 +96,8 @@ export class AuthService {
       throw new ForbiddenException("Access denied !");
     }
 
-    const tokens = await this.getTokens(user.id, user.email);
-    await this.updateRtHash(user.refreshTokens[0].id, tokens.refresh_token);
+    const tokens = await this.#_getTokens(user.id, user.email);
+    await this.#_updateRtHash(user.refreshTokens[0].id, tokens.refresh_token);
 
     return {
       id: user.id,
@@ -102,10 +106,11 @@ export class AuthService {
     };
   }
 
-  async refresh(userId: string, rt: string): Promise<Tokens> {
+  async refresh(payload: UserRefreshRequestInterface): Promise<Tokens> {
     const user = await this.#_prisma.user.findUnique({
       where: {
-        id: userId,
+        id: payload.userId,
+        deletedAt: null,
       },
       select: {
         id: true,
@@ -115,22 +120,26 @@ export class AuthService {
     });
 
     if (!user) throw new NotFoundException("User not Found !");
-    if (!user.refreshTokens)
+    if (!user.refreshTokens || !user.refreshTokens[0].token)
       throw new ForbiddenException("You are not logged in !");
 
-    const rtMatches = bcrypt.compare(rt, user.refreshTokens[0].token);
-    if (!rtMatches) throw new ForbiddenException("access denied !");
+    const rtMatches = await compare(
+      payload.refresh_token,
+      user.refreshTokens[0].token,
+    );
 
-    const tokens = await this.getTokens(userId, user.email);
-    await this.updateRtHash(user.id, tokens.refresh_token);
+    if (!rtMatches)
+      throw new ForbiddenException("Access denied - Invalid refresh token!");
+    const tokens = await this.#_getTokens(user.id, user.email);
+    await this.#_updateRtHash(user.refreshTokens[0].id, tokens.refresh_token);
 
     return tokens;
   }
 
-  async logout(userId: string) {
+  async logout(payload: UserLogoutInterface): Promise<void> {
     const user = await this.#_prisma.user.findUnique({
       where: {
-        id: userId,
+        id: payload.userId,
       },
       select: {
         refreshTokens: true,
@@ -157,7 +166,7 @@ export class AuthService {
     const decoded = this.#_jwt.verify(token, {
       secret: process.env.JWT_AT_SECRET,
     });
-    //
+
     console.log("decoded: ", decoded);
 
     const user = await this.#_prisma.user.findUnique({
@@ -169,12 +178,7 @@ export class AuthService {
     return user;
   }
 
-  hashdata(data: string): string {
-    const hasheddata = bcrypt.hashSync(data, 10);
-    return hasheddata;
-  }
-
-  async getTokens(UserId: string, email: string): Promise<Tokens> {
+  async #_getTokens(UserId: string, email: string): Promise<Tokens> {
     const [at, rt] = await Promise.all([
       this.#_jwt.signAsync(
         {
@@ -183,7 +187,7 @@ export class AuthService {
           type: "access",
         },
         {
-          expiresIn: "3",
+          expiresIn: "3000s",
           secret: process.env.JWT_AT_SECRET,
         },
       ),
@@ -206,8 +210,10 @@ export class AuthService {
     };
   }
 
-  async updateRtHash(id: string, rt: string) {
-    const updatedRt = this.hashdata(rt);
+  async #_updateRtHash(id: string, rt: string) {
+    console.log("rt: ", rt);
+    const updatedRt = await hash(rt);
+    console.log("updatedRt: ", updatedRt);
 
     await this.#_prisma.refreshToken.update({
       where: { id },
@@ -218,7 +224,7 @@ export class AuthService {
   }
 
   async #_createRtHash(userId: string, rt: string) {
-    const hashedRt = this.hashdata(rt);
+    const hashedRt = await hash(rt);
 
     await this.#_prisma.refreshToken.create({
       data: {

@@ -5,10 +5,18 @@ import {
   Post,
   HttpStatus,
   Injectable,
+  UseGuards,
 } from "@nestjs/common";
 import { AuthService } from "./auth.service";
-import { UserSigninDto, UserSignupDto } from "./dto";
+import {
+  UserLogoutDto,
+  UserRefreshDto,
+  UserSigninDto,
+  UserSignupDto,
+} from "./dto";
 import { UserSigninResponse, UserSignupResponse } from "./interface";
+import { Tokens } from "./types";
+import { JwtGuard } from "@guards";
 
 @Injectable()
 @Controller({
@@ -25,32 +33,26 @@ export class AuthController {
   @HttpCode(HttpStatus.CREATED)
   SignUp(@Body() dto: UserSignupDto): Promise<UserSignupResponse> {
     console.log("dto: ", dto);
-    return this.#_service.SignUp(dto);
+    return this.#_service.signUp(dto);
   }
 
   @Post("/signin")
   @HttpCode(HttpStatus.OK)
   SignIn(@Body() dto: UserSigninDto): Promise<UserSigninResponse> {
-    return this.#_service.SignIn(dto);
+    return this.#_service.signIn(dto);
   }
 
-  // @Post('logout')
-  // @HttpCode(HttpStatus.NO_CONTENT)
-  // logout() {
-  //   console.log('user', req.user);
-  //   const userId = req.user.sub;
-  //   return this.authService.logout(userId);
-  // }
+  @UseGuards(JwtGuard)
+  @Post("logout")
+  @HttpCode(HttpStatus.NO_CONTENT)
+  logout(@Body() dto: UserLogoutDto) {
+    return this.#_service.logout(dto);
+  }
 
-  // @Post('refresh')
-  // @UseInterceptors(VerivyUserInterceptor)
-  // @HttpCode(HttpStatus.OK)
-  // refresh(
-  //   @Req() req: RequestWithUser,
-  //   @Body() payload: { Rtoken: string },
-  // ): Promise<Tokens> {
-  //   const userId = req.body.userId;
-  //   const rt = payload.Rtoken;
-  //   return this.authService.refresh(userId, rt);
-  // }
+  @UseGuards(JwtGuard)
+  @Post("refresh")
+  @HttpCode(HttpStatus.OK)
+  refresh(@Body() payload: UserRefreshDto): Promise<Tokens> {
+    return this.#_service.refresh(payload);
+  }
 }

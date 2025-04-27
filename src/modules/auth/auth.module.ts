@@ -1,11 +1,11 @@
 import { Module } from "@nestjs/common";
 import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
-// import { RtStrategy } from './strategies/rt'
-// import { AtStrategy } from './strategies/at'
 import { JwtModule } from "@nestjs/jwt";
 import { CacheModule } from "@nestjs/cache-manager";
 import * as redisStore from "cache-manager-ioredis";
+import { PassportModule } from "@nestjs/passport";
+import { JwtStrategy } from "./strategies";
 
 @Module({
   imports: [
@@ -18,8 +18,11 @@ import * as redisStore from "cache-manager-ioredis";
         ttl: 60, // seconds
       }),
     }),
+    PassportModule.register({
+      defaultStrategy: "jwt",
+    }),
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, JwtStrategy],
 })
 export class AuthModule {}

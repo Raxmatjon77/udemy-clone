@@ -154,7 +154,7 @@ model Category {
 model RefreshToken {
   id        String   @id @default(uuid())
   userId    String
-  token     String
+  token     String?
   user      User     @relation(fields: [userId], references: [id])
 
   @@unique([userId,id], name: "refresh_token_user_uq")

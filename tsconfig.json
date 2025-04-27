@@ -6,6 +6,9 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
+    "paths": {
+      "@*": ["./src/*"]
+    },
     "target": "ES2021",
     "sourceMap": true,
     "outDir": "./dist",
