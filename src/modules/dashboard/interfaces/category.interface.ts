@@ -3,7 +3,6 @@ export interface CreateCategoryRequest {
   slug: string;
 }
 
-
 export interface UpdateCategoryRequest {
   id: string;
   name?: string;
@@ -16,7 +15,6 @@ export interface Category {
   slug: string;
   createdAt: Date;
   updatedAt: Date;
-  deletedAt: Date;
 }
 
 export interface GetCategoryByIdRequest {
