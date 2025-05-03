@@ -86,11 +86,7 @@ export class AuthService {
 
     if (!user) throw new NotFoundException("User Not found !");
 
-    console.log(user);
-
     const passwordMatches = await compare(dto.password, user.password);
-
-    console.log("compare ", passwordMatches);
 
     if (!passwordMatches) {
       throw new ForbiddenException("Access denied !");

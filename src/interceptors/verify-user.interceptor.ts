@@ -13,8 +13,14 @@ export class VerivyUserInterceptor implements NestInterceptor {
     next: CallHandler,
   ): Promise<Observable<any>> {
     const request = context.switchToHttp().getRequest();
-    const ip = request.headers["X-Real-IP"];
-    const device = request.headers["User-Agent"];
+    const ip =
+      process.env.NODE_ENV === "production"
+        ? request.headers["X-Real-IP"]
+        : request.ip;
+    const device =
+      process.env.NODE_ENV === "production"
+        ? request.headers["User-Agent"]
+        : request.headers["user-agent"];
     const deviceId = request.headers["X-Device-Id"];
 
     Object.assign(request.body, {
