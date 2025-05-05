@@ -27,7 +27,7 @@ export class AuthService {
   constructor(
     @Inject("CACHE_MANAGER") cashe: Cache,
     prisma: PrismaService,
-    jwt: JwtService,
+    jwt: JwtService
   ) {
     this.#_prisma = prisma;
     this.#_jwt = jwt;
@@ -42,8 +42,6 @@ export class AuthService {
       },
     });
 
-    console.log("existuser: ", existuser);
-
     if (existuser) {
       throw new BadRequestException("User with this email is already exist !");
     }
@@ -57,8 +55,6 @@ export class AuthService {
         name: dto.name,
       },
     });
-
-    console.log("new user", newUser);
 
     const tokens = await this.#_getTokens(newUser.id, newUser.email);
     await this.#_createRtHash(newUser.id, tokens.refresh_token);
@@ -121,7 +117,7 @@ export class AuthService {
 
     const rtMatches = await compare(
       payload.refresh_token,
-      user.refreshTokens[0].token,
+      user.refreshTokens[0].token
     );
 
     if (!rtMatches)
@@ -183,9 +179,9 @@ export class AuthService {
           type: "access",
         },
         {
-          expiresIn: "3000s",
+          expiresIn: "3000000s",
           secret: process.env.JWT_AT_SECRET,
-        },
+        }
       ),
       this.#_jwt.signAsync(
         {
@@ -196,7 +192,7 @@ export class AuthService {
         {
           expiresIn: 7,
           secret: process.env.JWT_RT_SECRET,
-        },
+        }
       ),
     ]);
 
@@ -207,10 +203,7 @@ export class AuthService {
   }
 
   async #_updateRtHash(id: string, rt: string) {
-    console.log("rt: ", rt);
     const updatedRt = await hash(rt);
-    console.log("updatedRt: ", updatedRt);
-
     await this.#_prisma.refreshToken.update({
       where: { id },
       data: {

@@ -1,13 +1,14 @@
-import { Controller, Get, Param, Post, Body, Patch, UseGuards } from "@nestjs/common";
+import { Controller, Get, Param, Post, Body, Patch, UseGuards, UseInterceptors, UploadedFile } from "@nestjs/common";
 import { CategoryService } from "./category.service";
 import { Category } from "./interfaces";
 import { CreateCategoryDto, UpdateCategoryDto } from "./dtos";
 import { Roles } from "@decorators";
 import { Role } from "@enums";
 import { JwtGuard, RolesGuard } from "@guards";
+import { FileInterceptor } from "@nestjs/platform-express";
 
 @Controller("category")
-@UseGuards(JwtGuard,RolesGuard)
+@UseGuards(JwtGuard, RolesGuard)
 @Roles(Role.ADMIN)
 export class CategoryController {
   readonly #_service: CategoryService;
@@ -26,8 +27,12 @@ export class CategoryController {
   }
 
   @Post()
-  async createCategory(@Body() payload: CreateCategoryDto): Promise<void> {
-    return this.#_service.createCategory(payload);
+  @UseInterceptors(FileInterceptor('file'))
+  async createCategory(
+    @UploadedFile() image: Express.Multer.File,
+    @Body() payload: CreateCategoryDto
+  ): Promise<void> {
+    return this.#_service.createCategory(payload, image);
   }
 
   @Patch(":id")

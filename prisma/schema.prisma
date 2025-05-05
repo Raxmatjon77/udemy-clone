@@ -37,6 +37,7 @@ model User {
   email     String   @unique
   password  String
   role      Role     @default(USER)
+  profilePicture   String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt @map("updated_at") @default(now()) 
   deletedAt DateTime? @map("deleted_at") @db.Timestamptz(0)
@@ -62,6 +63,7 @@ model Course {
   desc        String
   price       Float
   thumbnail   String
+  image       String?
   isPublished Boolean      @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt @map("updated_at") @default(now()) 
@@ -142,6 +144,7 @@ model Category {
   id      String   @id @default(uuid())
   name    String   
   slug    String   @unique
+  image   String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt @map("updated_at") @default(now()) 
   deletedAt DateTime? @map("deleted_at") @db.Timestamptz(0)
@@ -193,7 +196,8 @@ model Progress {
 model Upload {
   id         String    @id @default(uuid())
   url        String
-  type       MediaType
+  MediaType       MediaType
+  type       String
   uploadedBy String
   user       User      @relation(fields: [uploadedBy], references: [id])
   createdAt  DateTime  @default(now())

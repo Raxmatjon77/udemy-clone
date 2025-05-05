@@ -6,6 +6,10 @@ export class CreateCategoryDto implements CreateCategoryRequest {
 
   @IsString()
   slug: string;
+
+  @IsOptional()
+  @IsString()
+  image?: string;
 }
 
 export class UpdateCategoryDto implements Omit<UpdateCategoryRequest, "id"> {
@@ -16,4 +20,8 @@ export class UpdateCategoryDto implements Omit<UpdateCategoryRequest, "id"> {
   @IsOptional()
   @IsString()
   slug: string;
+
+  @IsOptional()
+  @IsString()
+  image?: string;
 }
