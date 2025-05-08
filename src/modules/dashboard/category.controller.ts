@@ -1,4 +1,14 @@
-import { Controller, Get, Param, Post, Body, Patch, UseGuards, UseInterceptors, UploadedFile } from "@nestjs/common";
+import {
+  Controller,
+  Get,
+  Param,
+  Post,
+  Body,
+  Patch,
+  UseGuards,
+  UseInterceptors,
+  UploadedFile,
+} from "@nestjs/common";
 import { CategoryService } from "./category.service";
 import { Category } from "./interfaces";
 import { CreateCategoryDto, UpdateCategoryDto } from "./dtos";
@@ -27,10 +37,10 @@ export class CategoryController {
   }
 
   @Post()
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileInterceptor("file"))
   async createCategory(
     @UploadedFile() image: Express.Multer.File,
-    @Body() payload: CreateCategoryDto
+    @Body() payload: CreateCategoryDto,
   ): Promise<void> {
     return this.#_service.createCategory(payload, image);
   }
@@ -38,7 +48,7 @@ export class CategoryController {
   @Patch(":id")
   async updateCategory(
     @Param("id") id: string,
-    @Body() payload: UpdateCategoryDto
+    @Body() payload: UpdateCategoryDto,
   ): Promise<Category> {
     return this.#_service.updateCategory({ id, ...payload });
   }

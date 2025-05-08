@@ -3,3 +3,7 @@ export * from "./course.service";
 export * from "./course.controller";
 export * from "./interfaces";
 export * from "./dtos";
+export * from "./lesson.service";
+export * from "./section.service";
+export * from "./lesson.controller";
+export * from "./section.controller";

@@ -9,4 +9,3 @@ export interface CreateCourseRequest {
   categoryId: string;
   authorId: string;
 }
-

@@ -25,11 +25,15 @@ export class MinioService {
       .catch((err) => {
         console.log(err);
       });
-      
+
     return objectName;
   }
 
   async getFileUrl(bucket: string, objectName: string): Promise<string> {
     return await this.minioClient.presignedGetObject(bucket, objectName);
+  }
+
+  async deleteFile(bucket: string, objectName: string): Promise<void> {
+    await this.minioClient.removeObject(bucket, objectName);
   }
 }

@@ -27,7 +27,7 @@ export class AuthService {
   constructor(
     @Inject("CACHE_MANAGER") cashe: Cache,
     prisma: PrismaService,
-    jwt: JwtService
+    jwt: JwtService,
   ) {
     this.#_prisma = prisma;
     this.#_jwt = jwt;
@@ -117,7 +117,7 @@ export class AuthService {
 
     const rtMatches = await compare(
       payload.refresh_token,
-      user.refreshTokens[0].token
+      user.refreshTokens[0].token,
     );
 
     if (!rtMatches)
@@ -181,7 +181,7 @@ export class AuthService {
         {
           expiresIn: "3000000s",
           secret: process.env.JWT_AT_SECRET,
-        }
+        },
       ),
       this.#_jwt.signAsync(
         {
@@ -192,7 +192,7 @@ export class AuthService {
         {
           expiresIn: 7,
           secret: process.env.JWT_RT_SECRET,
-        }
+        },
       ),
     ]);
 

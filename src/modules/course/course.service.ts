@@ -1,6 +1,10 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { PrismaService } from "@prisma/prisma.service";
-import { CreateCourseRequest } from "./interfaces";
+import {
+  CreateCourseRequest,
+  GetCourseResponse,
+  UpdateCourseRequest,
+} from "./interfaces";
 import { MinioService } from "@modules";
 
 @Injectable()
@@ -12,7 +16,10 @@ export class CourseService {
     this.#_minio = minio;
   }
 
-  async createCourse(data: CreateCourseRequest, image: Express.Multer.File):Promise<void> {
+  async createCourse(
+    data: CreateCourseRequest,
+    image: Express.Multer.File,
+  ): Promise<void> {
     if (!image) {
       throw new BadRequestException("Image is required");
     }
@@ -22,7 +29,7 @@ export class CourseService {
         slug: data.slug,
       },
     });
-    
+
     if (existingCourse) {
       throw new BadRequestException("Course already exists");
     }
@@ -52,5 +59,122 @@ export class CourseService {
     });
   }
 
-  
+  async getCourse(id: string): Promise<GetCourseResponse> {
+    const course = await this.#_prisma.course.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        desc: true,
+        price: true,
+        thumbnail: true,
+        isPublished: true,
+        image: true,
+        author: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        category: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        sections: {
+          select: {
+            id: true,
+            title: true,
+          },
+        },
+      },
+    });
+
+    if (!course) {
+      throw new BadRequestException("Course not found");
+    }
+
+    return course;
+  }
+
+  async updateCourse(
+    id: string,
+    data: UpdateCourseRequest,
+    image: Express.Multer.File | undefined,
+  ): Promise<void> {
+    const existingCourse = await this.#_prisma.course.findUnique({
+      where: { id },
+    });
+
+    if (!existingCourse) {
+      throw new BadRequestException("Course not found");
+    }
+
+    let imageUrl: string | undefined;
+    if (image) {
+      if (existingCourse.image) {
+        await this.#_minio.deleteFile("course", existingCourse.image);
+      }
+
+      imageUrl = await this.#_minio.uploadFile("course", image);
+      data.thumbnail = imageUrl;
+    }
+
+    await this.#_prisma.course
+      .update({
+        where: { id },
+        data: {
+          title: data.title ? data.title : existingCourse.title,
+          slug: data.slug ? data.slug : existingCourse.slug,
+          desc: data.desc ? data.desc : existingCourse.desc,
+          price: data.price ? Number(data.price) : existingCourse.price,
+          thumbnail: data.thumbnail ? data.thumbnail : existingCourse.thumbnail,
+          isPublished: data.isPublished
+            ? Boolean(data.isPublished)
+            : existingCourse.isPublished,
+          image: imageUrl ? imageUrl : existingCourse.image,
+          author: {
+            connect: {
+              id: data.authorId ? data.authorId : existingCourse.authorId,
+            },
+          },
+          category: {
+            connect: {
+              id: data.categoryId ? data.categoryId : existingCourse.categoryId,
+            },
+          },
+        },
+      })
+      .catch(() => {
+        throw new BadRequestException("Failed to update course");
+      });
+  }
+
+  async deleteCourse(id: string): Promise<void> {
+    const existingCourse = await this.#_prisma.course.findUnique({
+      where: { id },
+    });
+
+    if (!existingCourse) {
+      throw new BadRequestException("Course not found");
+    }
+
+    if (existingCourse.image) {
+      await this.#_minio
+        .deleteFile("course", existingCourse.image)
+        .catch(() => {
+          throw new BadRequestException("Failed to delete image");
+        });
+    }
+
+    await this.#_prisma.course
+      .delete({
+        where: { id },
+      })
+      .catch(() => {
+        throw new BadRequestException("Failed to delete course");
+      });
+  }
 }

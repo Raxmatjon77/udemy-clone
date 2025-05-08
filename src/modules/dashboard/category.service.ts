@@ -49,7 +49,7 @@ export class CategoryService {
 
   async createCategory(
     payload: CreateCategoryRequest,
-    image: Express.Multer.File
+    image: Express.Multer.File,
   ): Promise<void> {
     const category = await this.#_prisma.category.findUnique({
       where: { slug: payload.slug },

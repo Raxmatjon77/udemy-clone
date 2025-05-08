@@ -1,6 +1,6 @@
 import { IsString, IsNotEmpty, IsBoolean, IsNumber } from "class-validator";
 import { CreateCourseRequest } from "../interfaces";
-import { Type } from "class-transformer";   
+import { Type } from "class-transformer";
 export class CreateCourseDto implements Omit<CreateCourseRequest, "image"> {
   @IsString()
   @IsNotEmpty()
