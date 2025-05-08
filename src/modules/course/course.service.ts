@@ -99,6 +99,41 @@ export class CourseService {
     return course;
   }
 
+  async getCourses(): Promise<GetCourseResponse[]> {
+    const courses = await this.#_prisma.course.findMany({
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        desc: true,
+        price: true,
+        thumbnail: true,
+        isPublished: true,
+        image: true,
+        author: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        category: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        sections: {
+          select: {
+            id: true,
+            title: true,
+          },
+        },
+      },
+    });
+
+    return courses;
+  }
+
   async updateCourse(
     id: string,
     data: UpdateCourseRequest,
