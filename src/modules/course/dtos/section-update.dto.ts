@@ -1,4 +1,4 @@
-import {  IsNumber, IsString } from "class-validator";
+import { IsNumber, IsString } from "class-validator";
 import { SectionUpdate } from "../interfaces";
 export class SectionUpdateDto implements SectionUpdate {
   @IsString()
@@ -9,5 +9,4 @@ export class SectionUpdateDto implements SectionUpdate {
 
   @IsString()
   courseId: string;
- 
 }

@@ -8,10 +8,12 @@ import {
   ConstructorModule,
   CourseModule,
   DashboardModule,
+  VideoModule,
 } from "@modules";
 
 @Module({
   imports: [
+    VideoModule,
     PrismaModule,
     AuthModule,
     UserModule,

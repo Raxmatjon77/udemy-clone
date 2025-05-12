@@ -1,4 +1,13 @@
-import { Controller, Post, Body, Get, Query, Param, Put, Delete, Patch } from "@nestjs/common";
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Query,
+  Param,
+  Delete,
+  Patch,
+} from "@nestjs/common";
 import { SectionService } from "./section.service";
 import { SectionCreateDto, SectionUpdateDto } from "./dtos";
 
@@ -25,10 +34,7 @@ export class SectionController {
   }
 
   @Patch(":id")
-  async updateSection(
-    @Param("id") id: string,
-    @Body() data: SectionUpdateDto,
-  ) {
+  async updateSection(@Param("id") id: string, @Body() data: SectionUpdateDto) {
     return this.#service.updateSection(id, data);
   }
 
