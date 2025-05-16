@@ -2,7 +2,7 @@ import { Module } from "@nestjs/common";
 import { CategoryService } from "./category.service";
 import { PrismaModule } from "@prisma";
 import { CategoryController } from "./category.controller";
-import { MinioModule } from "@modules";
+import { MinioModule } from "@clients";
 @Module({
   providers: [CategoryService],
   imports: [PrismaModule, MinioModule],

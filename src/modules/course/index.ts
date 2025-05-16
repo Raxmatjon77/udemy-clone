@@ -7,4 +7,3 @@ export * from "./lesson.service";
 export * from "./section.service";
 export * from "./lesson.controller";
 export * from "./section.controller";
-export * from "./video";

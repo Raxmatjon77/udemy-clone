@@ -3,11 +3,16 @@ import {
   CreateMultipartUploadCommand,
   UploadPartCommand,
   CompleteMultipartUploadCommand,
-  CompletedPart,
   GetObjectCommand,
 } from "@aws-sdk/client-s3";
-import { Injectable } from "@nestjs/common";
+import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import { PassThrough } from "stream";
+import {
+  VideoUploadChunk,
+  VideoUploadChunkResponse,
+  VideoUploadCompleteRequest,
+  VideoUploadInit,
+} from "./interfaces";
 
 @Injectable()
 export class S3Service {
@@ -16,56 +21,48 @@ export class S3Service {
   constructor() {
     this.s3 = new S3Client({
       region: "us-east-1",
-      endpoint: process.env.MINIO_URL, // your MinIO endpoint
+      endpoint: process.env.MINIO_URL,
       credentials: {
         accessKeyId: process.env.MINIO_USER,
         secretAccessKey: process.env.MINIO_PASS,
       },
-      forcePathStyle: true, // required for MinIO
+      forcePathStyle: true,
     });
   }
 
-  async initUpload(bucket: string, key: string) {
+  async initUpload(payload: VideoUploadInit) {
     const command = new CreateMultipartUploadCommand({
-      Bucket: bucket,
-      Key: key,
+      Bucket: payload.bucket,
+      Key: payload.key,
     });
+
     const response = await this.s3.send(command);
     return response.UploadId;
   }
 
   async uploadPart(
-    bucket: string,
-    key: string,
-    uploadId: string,
-    partNumber: number,
-    body: Buffer
-  ) {
+    payload: VideoUploadChunk,
+  ): Promise<VideoUploadChunkResponse> {
     const command = new UploadPartCommand({
-      Bucket: bucket,
-      Key: key,
-      UploadId: uploadId,
-      PartNumber: partNumber,
-      Body: body,
+      Bucket: payload.bucket,
+      Key: payload.key,
+      UploadId: payload.uploadId,
+      PartNumber: Number(payload.partNumber),
+      Body: payload.body,
     });
     const response = await this.s3.send(command);
     return {
       ETag: response.ETag,
-      PartNumber: partNumber,
+      PartNumber: payload.partNumber,
     };
   }
 
-  async completeUpload(
-    bucket: string,
-    key: string,
-    uploadId: string,
-    parts: CompletedPart[]
-  ) {
+  async completeUpload(bucket: string, payload: VideoUploadCompleteRequest) {
     const command = new CompleteMultipartUploadCommand({
       Bucket: bucket,
-      Key: key,
-      UploadId: uploadId,
-      MultipartUpload: { Parts: parts },
+      Key: payload.key,
+      UploadId: payload.uploadId,
+      MultipartUpload: { Parts: payload.parts },
     });
     return await this.s3.send(command);
   }
@@ -77,7 +74,12 @@ export class S3Service {
       Range: range,
     });
 
-    const response = await this.s3.send(command);
+    console.log(key);
+
+    const response = await this.s3.send(command).catch((err) => {
+      // console.log(err);
+      throw new InternalServerErrorException(err);
+    });
     const stream = response.Body as unknown as PassThrough;
     const contentLength = Number(response.ContentLength);
     const contentType = response.ContentType;

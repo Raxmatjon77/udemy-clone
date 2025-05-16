@@ -5,6 +5,7 @@ import { ValidationPipe } from "@nestjs/common";
 // import { LoggerInterceptor } from "./interceptors";
 
 import * as bodyParser from "body-parser";
+import { LoggerInterceptor } from "@interceptors";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -17,7 +18,7 @@ async function bootstrap() {
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     credentials: true,
   });
-  // app.useGlobalInterceptors(new LoggerInterceptor());
+  app.useGlobalInterceptors(new LoggerInterceptor());
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();

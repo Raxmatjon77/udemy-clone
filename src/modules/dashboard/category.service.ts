@@ -10,7 +10,7 @@ import {
   GetCategoryByIdRequest,
   Category,
 } from "./interfaces";
-import { MinioService } from "@modules";
+import { MinioService } from "@clients";
 
 @Injectable()
 export class CategoryService {

@@ -5,7 +5,7 @@ import {
   GetCourseResponse,
   UpdateCourseRequest,
 } from "./interfaces";
-import { MinioService } from "@modules";
+import { MinioService } from "@clients";
 
 @Injectable()
 export class CourseService {

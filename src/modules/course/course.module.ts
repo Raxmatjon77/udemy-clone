@@ -6,7 +6,7 @@ import { SectionController } from "./section.controller";
 import { SectionService } from "./section.service";
 import { LessonService } from "./lesson.service";
 import { CourseService } from "./course.service";
-import { MinioModule } from "@modules";
+import { MinioModule } from "@clients";
 
 @Module({
   controllers: [CourseController, LessonController, SectionController],
