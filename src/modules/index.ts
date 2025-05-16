@@ -5,3 +5,4 @@ export * from "./constructor";
 export * from "./dashboard";
 export * from "./course";
 export * from "./video";
+export * from './health'

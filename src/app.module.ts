@@ -9,6 +9,7 @@ import {
   CourseModule,
   DashboardModule,
   VideoModule,
+  HealthModule,
 } from "@modules";
 
 @Module({
@@ -20,6 +21,7 @@ import {
     ConstructorModule,
     DashboardModule,
     CourseModule,
+    HealthModule
   ],
   controllers: [AppController],
   providers: [AppService],
