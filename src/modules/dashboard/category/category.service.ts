@@ -49,7 +49,7 @@ export class CategoryService {
 
   async createCategory(
     payload: CreateCategoryRequest,
-    image: Express.Multer.File,
+    image: Express.Multer.File
   ): Promise<void> {
     const category = await this.#_prisma.category.findUnique({
       where: { slug: payload.slug },
@@ -60,9 +60,7 @@ export class CategoryService {
 
     let imageUrl = null;
     if (image) {
-      imageUrl = await this.#_minio.uploadFile("category", image).catch(() => {
-        throw new BadRequestException("Failed to upload image");
-      });
+      imageUrl = await this.#_minio.uploadFile("category", image);
     }
 
     await this.#_prisma.category.create({

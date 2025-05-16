@@ -1,14 +1,13 @@
 import {
   BadRequestException,
   ForbiddenException,
-  Inject,
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
-import { PrismaService } from "src/prisma/prisma.service";
+import { PrismaService } from "src/prisma";
 import { Tokens } from "./types/";
 import { JwtService } from "@nestjs/jwt";
-import { Cache } from "cache-manager";
+
 import {
   UserLogoutInterface,
   UserRefreshRequestInterface,
@@ -23,15 +22,9 @@ import { hash, compare } from "src/helpers";
 export class AuthService {
   readonly #_prisma: PrismaService;
   readonly #_jwt: JwtService;
-  readonly #_cashe: Cache;
-  constructor(
-    @Inject("CACHE_MANAGER") cashe: Cache,
-    prisma: PrismaService,
-    jwt: JwtService,
-  ) {
+  constructor(prisma: PrismaService, jwt: JwtService) {
     this.#_prisma = prisma;
     this.#_jwt = jwt;
-    this.#_cashe = cashe;
   }
 
   async signUp(dto: UserSignupRequest): Promise<UserSignupResponse> {
@@ -165,6 +158,11 @@ export class AuthService {
       where: {
         id: decoded.sub,
       },
+      select:{
+        id:true,
+        courses:true,
+        enrollments:true
+      }
     });
     if (!user) throw new NotFoundException("User not found !");
     return user;
@@ -202,7 +200,7 @@ export class AuthService {
     };
   }
 
-  async #_updateRtHash(id: string, rt: string) {
+  async #_updateRtHash(id: string, rt: string): Promise<void> {
     const updatedRt = await hash(rt);
     await this.#_prisma.refreshToken.update({
       where: { id },
@@ -212,7 +210,7 @@ export class AuthService {
     });
   }
 
-  async #_createRtHash(userId: string, rt: string) {
+  async #_createRtHash(userId: string, rt: string):Promise<void> {
     const hashedRt = await hash(rt);
 
     await this.#_prisma.refreshToken.create({

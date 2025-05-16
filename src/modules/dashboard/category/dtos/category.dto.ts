@@ -1,5 +1,9 @@
 import { IsString, IsOptional } from "class-validator";
-import { CreateCategoryRequest, UpdateCategoryRequest } from "../interfaces";
+import {
+  CreateCategoryRequest,
+  UpdateCategoryRequest,
+} from "../interfaces";
+
 export class CreateCategoryDto implements CreateCategoryRequest {
   @IsString()
   name: string;

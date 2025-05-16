@@ -40,7 +40,7 @@ export class CategoryController {
   @UseInterceptors(FileInterceptor("file"))
   async createCategory(
     @UploadedFile() image: Express.Multer.File,
-    @Body() payload: CreateCategoryDto,
+    @Body() payload: CreateCategoryDto
   ): Promise<void> {
     return this.#_service.createCategory(payload, image);
   }
@@ -48,7 +48,7 @@ export class CategoryController {
   @Patch(":id")
   async updateCategory(
     @Param("id") id: string,
-    @Body() payload: UpdateCategoryDto,
+    @Body() payload: UpdateCategoryDto
   ): Promise<Category> {
     return this.#_service.updateCategory({ id, ...payload });
   }

@@ -1,3 +1,2 @@
-export * from "./category.service";
-export * from "./category.controller";
+export * from './category'
 export * from "./dashboard.module";
