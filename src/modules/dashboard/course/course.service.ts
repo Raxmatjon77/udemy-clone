@@ -6,6 +6,7 @@ import {
   UpdateCourseRequest,
 } from "./interfaces";
 import { MinioService } from "@clients";
+import { PaginationResponse, PaginationRequest } from "@modules";
 
 @Injectable()
 export class CourseService {
@@ -61,7 +62,7 @@ export class CourseService {
 
   async getCourse(id: string): Promise<GetCourseResponse> {
     const course = await this.#_prisma.course.findUnique({
-      where: { id },
+      where: { id, deletedAt: null },
       select: {
         id: true,
         title: true,
@@ -99,8 +100,20 @@ export class CourseService {
     return course;
   }
 
-  async getCourses(): Promise<GetCourseResponse[]> {
+  async getCourses(
+    payload: PaginationRequest,
+  ): Promise<PaginationResponse<GetCourseResponse>> {
+    let { pageNumber, pageSize } = payload;
+
+    if (!pageNumber) pageNumber = 1;
+    if (!pageSize) pageSize = 10;
+
+    const skip = (Number(pageNumber) - 1) * Number(pageSize);
+    const take = Number(pageSize);
     const courses = await this.#_prisma.course.findMany({
+      where: { deletedAt: null },
+      skip,
+      take,
       select: {
         id: true,
         title: true,
@@ -131,7 +144,12 @@ export class CourseService {
       },
     });
 
-    return courses;
+    return {
+      data: courses,
+      total: courses.length,
+      pageNumber: Number(pageNumber) || 1,
+      pageSize: Number(pageSize) || 10,
+    };
   }
 
   async updateCourse(

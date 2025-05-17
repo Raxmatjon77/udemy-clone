@@ -11,6 +11,7 @@ import {
   Category,
 } from "./interfaces";
 import { MinioService } from "@clients";
+import { PaginationRequest, PaginationResponse } from "@modules";
 
 @Injectable()
 export class CategoryService {
@@ -21,11 +22,23 @@ export class CategoryService {
     this.#_minio = minio;
   }
 
-  async getCategories(): Promise<Category[]> {
-    return this.#_prisma.category.findMany({
+  async getCategories(
+    payload: PaginationRequest,
+  ): Promise<PaginationResponse<Category>> {
+    let { pageNumber, pageSize } = payload;
+    console.log(pageNumber, pageSize);
+
+    if (!pageNumber) pageNumber = 1;
+    if (!pageSize) pageSize = 10;
+
+    const skip = (Number(pageNumber) - 1) * Number(pageSize);
+    const take = Number(pageSize);
+    const categories = await this.#_prisma.category.findMany({
       orderBy: {
         createdAt: "desc",
       },
+      skip,
+      take,
       select: {
         id: true,
         name: true,
@@ -35,6 +48,13 @@ export class CategoryService {
         image: true,
       },
     });
+
+    return {
+      data: categories,
+      total: categories.length,
+      pageNumber: Number(pageNumber) || 1,
+      pageSize: Number(pageSize) || 10,
+    };
   }
 
   async getCategoryById(payload: GetCategoryByIdRequest): Promise<Category> {
@@ -49,7 +69,7 @@ export class CategoryService {
 
   async createCategory(
     payload: CreateCategoryRequest,
-    image: Express.Multer.File
+    image: Express.Multer.File,
   ): Promise<void> {
     const category = await this.#_prisma.category.findUnique({
       where: { slug: payload.slug },

@@ -8,6 +8,7 @@ import {
   UseGuards,
   UseInterceptors,
   UploadedFile,
+  Query,
 } from "@nestjs/common";
 import { CategoryService } from "./category.service";
 import { Category } from "./interfaces";
@@ -16,6 +17,7 @@ import { Roles } from "@decorators";
 import { Role } from "@enums";
 import { JwtGuard, RolesGuard } from "@guards";
 import { FileInterceptor } from "@nestjs/platform-express";
+import { PaginationResponse } from "@modules";
 
 @Controller("category")
 @UseGuards(JwtGuard, RolesGuard)
@@ -27,8 +29,11 @@ export class CategoryController {
   }
 
   @Get()
-  async getCategories(): Promise<Category[]> {
-    return this.#_service.getCategories();
+  async getCategories(
+    @Query("pageNumber") pageNumber: number,
+    @Query("pageSize") pageSize: number,
+  ): Promise<PaginationResponse<Category>> {
+    return this.#_service.getCategories({ pageNumber, pageSize });
   }
 
   @Get(":id")
@@ -40,7 +45,7 @@ export class CategoryController {
   @UseInterceptors(FileInterceptor("file"))
   async createCategory(
     @UploadedFile() image: Express.Multer.File,
-    @Body() payload: CreateCategoryDto
+    @Body() payload: CreateCategoryDto,
   ): Promise<void> {
     return this.#_service.createCategory(payload, image);
   }
@@ -48,7 +53,7 @@ export class CategoryController {
   @Patch(":id")
   async updateCategory(
     @Param("id") id: string,
-    @Body() payload: UpdateCategoryDto
+    @Body() payload: UpdateCategoryDto,
   ): Promise<Category> {
     return this.#_service.updateCategory({ id, ...payload });
   }

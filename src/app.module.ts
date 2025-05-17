@@ -21,7 +21,7 @@ import {
     ConstructorModule,
     DashboardModule,
     CourseModule,
-    HealthModule
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

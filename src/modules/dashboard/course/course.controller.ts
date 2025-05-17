@@ -8,10 +8,13 @@ import {
   Param,
   Delete,
   Patch,
+  Query,
 } from "@nestjs/common";
 import { CourseService } from "./course.service";
 import { CreateCourseDto, UpdateCourseDto } from "./dtos";
 import { FileInterceptor } from "@nestjs/platform-express";
+import { PaginationResponse } from "@modules";
+import { GetCourseResponse } from "./interfaces";
 
 @Controller("course")
 export class CourseController {
@@ -31,8 +34,11 @@ export class CourseController {
   }
 
   @Get()
-  async getCourses() {
-    return this.#_service.getCourses();
+  async getCourses(
+    @Query("pageNumber") pageNumber: number,
+    @Query("pageSize") pageSize: number,
+  ): Promise<PaginationResponse<GetCourseResponse>> {
+    return this.#_service.getCourses({ pageNumber, pageSize });
   }
 
   @Get(":id")

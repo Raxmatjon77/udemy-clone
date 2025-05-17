@@ -158,11 +158,11 @@ export class AuthService {
       where: {
         id: decoded.sub,
       },
-      select:{
-        id:true,
-        courses:true,
-        enrollments:true
-      }
+      select: {
+        id: true,
+        courses: true,
+        enrollments: true,
+      },
     });
     if (!user) throw new NotFoundException("User not found !");
     return user;
@@ -210,7 +210,7 @@ export class AuthService {
     });
   }
 
-  async #_createRtHash(userId: string, rt: string):Promise<void> {
+  async #_createRtHash(userId: string, rt: string): Promise<void> {
     const hashedRt = await hash(rt);
 
     await this.#_prisma.refreshToken.create({

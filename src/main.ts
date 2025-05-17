@@ -18,6 +18,8 @@ async function bootstrap() {
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     credentials: true,
   });
+
+  app.setGlobalPrefix("api/v1");
   app.useGlobalInterceptors(new LoggerInterceptor());
   await app.listen(process.env.PORT ?? 3000);
 }
