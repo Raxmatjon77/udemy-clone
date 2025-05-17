@@ -19,7 +19,7 @@ import { JwtGuard, RolesGuard } from "@guards";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { PaginationResponse } from "@modules";
 
-@Controller("category")
+@Controller("dashboard/category")
 @UseGuards(JwtGuard, RolesGuard)
 @Roles(Role.ADMIN)
 export class CategoryController {

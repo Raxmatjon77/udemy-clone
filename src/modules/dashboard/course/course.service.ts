@@ -18,21 +18,35 @@ export class CourseService {
   }
 
   async createCourse(
-    data: CreateCourseRequest,
-    image: Express.Multer.File,
+    data: CreateCourseRequest, 
+    image: Express.Multer.File
   ): Promise<void> {
     if (!image) {
       throw new BadRequestException("Image is required");
     }
 
-    const existingCourse = await this.#_prisma.course.findUnique({
-      where: {
-        slug: data.slug,
-      },
-    });
+    const [author, category, existingCourse] = await Promise.all([
+      this.#_prisma.user.findUnique({
+        where: { id: data.authorId },
+      }),
+      this.#_prisma.category.findUnique({
+        where: { id: data.categoryId },
+      }),
+      this.#_prisma.course.findUnique({
+        where: { slug: data.slug },
+      }),
+    ]);
 
     if (existingCourse) {
       throw new BadRequestException("Course already exists");
+    }
+
+    if (!author) {
+      throw new BadRequestException("Author not found");
+    }
+
+    if (!category) {
+      throw new BadRequestException("Category not found");
     }
 
     const imageUrl = await this.#_minio.uploadFile("course", image);
@@ -101,7 +115,7 @@ export class CourseService {
   }
 
   async getCourses(
-    payload: PaginationRequest,
+    payload: PaginationRequest
   ): Promise<PaginationResponse<GetCourseResponse>> {
     let { pageNumber, pageSize } = payload;
 
@@ -114,10 +128,13 @@ export class CourseService {
       where: { deletedAt: null },
       skip,
       take,
+      orderBy: {
+        createdAt: "desc",
+      },
       select: {
         id: true,
         title: true,
-        slug: true,
+        slug : true,
         desc: true,
         price: true,
         thumbnail: true,
@@ -155,7 +172,7 @@ export class CourseService {
   async updateCourse(
     id: string,
     data: UpdateCourseRequest,
-    image: Express.Multer.File | undefined,
+    image: Express.Multer.File | undefined
   ): Promise<void> {
     const existingCourse = await this.#_prisma.course.findUnique({
       where: { id },

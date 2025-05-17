@@ -25,7 +25,7 @@ export class VideoUploadController {
 
   @Post("init")
   async initUpload(
-    @Query("key") key: string,
+    @Query("key") key: string
   ): Promise<VideoUploadInitResponse> {
     const uploadId = await this.#_service.initUpload({
       bucket: this.#_bucket,
@@ -39,28 +39,21 @@ export class VideoUploadController {
   async uploadChunk(
     @UploadedFile() file: Express.Multer.File,
     @Body()
-    body: ChunkUploadDto,
+    body: ChunkUploadDto
   ): Promise<VideoUploadChunkResponse> {
-    const part = await this.#_service
-      .uploadPart({
-        bucket: this.#_bucket,
-        key: body.key,
-        uploadId: body.uploadId,
-        partNumber: body.partNumber,
-        body: file.buffer,
-      })
-      .catch((err) => {
-        console.log(err);
-        throw err;
-      });
-
-    return part;
+    return await this.#_service.uploadPart({
+      bucket: this.#_bucket,
+      key: body.key,
+      uploadId: body.uploadId,
+      partNumber: body.partNumber,
+      body: file.buffer,
+    });
   }
 
   @Post("complete")
   async completeUpload(
     @Body()
-    body: UploadCompleteDto,
+    body: UploadCompleteDto
   ): Promise<void> {
     await this.#_service.completeUpload(this.#_bucket, body);
   }

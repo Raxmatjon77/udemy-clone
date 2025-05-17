@@ -3,11 +3,16 @@ import { LessonService } from "./lesson.service";
 import { CreateLessonDto } from "./dtos";
 import { GetLessonResponse } from "./interfaces";
 
-@Controller("lessons")
+@Controller("dashboard/lessons")
 export class LessonController {
   readonly #service: LessonService;
   constructor(service: LessonService) {
     this.#service = service;
+  }
+
+  @Post()
+  async createLesson(@Body() data: CreateLessonDto): Promise<void> {
+    await this.#service.createLesson(data);
   }
 
   @Get(":id")

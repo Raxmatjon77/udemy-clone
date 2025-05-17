@@ -9,8 +9,8 @@ import {
   Patch,
 } from "@nestjs/common";
 import { SectionService } from "./section.service";
-import { SectionCreateDto, SectionUpdateDto } from "./dtos";
-
+import { GetSectionResponse } from "./interfaces";
+import { PaginationResponse } from "@modules";
 @Controller("sections")
 export class SectionController {
   readonly #service: SectionService;
@@ -18,28 +18,17 @@ export class SectionController {
     this.#service = service;
   }
 
-  @Post()
-  async createSection(@Body() data: SectionCreateDto) {
-    return this.#service.createSection(data);
-  }
-
   @Get()
-  async getSections(@Query("courseId") courseId: string) {
-    return this.#service.getSections(courseId);
+  async getSections(
+    @Query("courseId") courseId: string,
+    @Query("pageNumber") pageNumber: number,
+    @Query("pageSize") pageSize: number
+  ): Promise<PaginationResponse<GetSectionResponse>> {
+    return this.#service.getSections({courseId, pageNumber, pageSize});
   }
 
   @Get(":id")
   async getSection(@Param("id") id: string) {
     return this.#service.getSection(id);
-  }
-
-  @Patch(":id")
-  async updateSection(@Param("id") id: string, @Body() data: SectionUpdateDto) {
-    return this.#service.updateSection(id, data);
-  }
-
-  @Delete(":id")
-  async deleteSection(@Param("id") id: string) {
-    return this.#service.deleteSection(id);
   }
 }

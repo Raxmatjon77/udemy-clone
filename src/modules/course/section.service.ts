@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "@prisma";
-import { GetSectionResponse, SectionCreate, SectionUpdate } from "./interfaces";
+import { GetSectionResponse } from "./interfaces";
+import { PaginationResponse } from "@modules";
 @Injectable()
 export class SectionService {
   readonly #_prisma: PrismaService;
@@ -8,32 +9,24 @@ export class SectionService {
     this.#_prisma = prisma;
   }
 
-  async createSection(data: SectionCreate): Promise<void> {
-    const course = await this.#_prisma.course.findUnique({
-      where: { id: data.courseId },
-    });
+  async getSections(payload: {courseId: string, pageNumber: number, pageSize: number}): Promise<PaginationResponse<GetSectionResponse>> {
+    
+    if(!payload.pageNumber) payload.pageNumber = 1;
+    if(!payload.pageSize) payload.pageSize = 10;
 
-    if (!course) {
-      throw new NotFoundException("Course not found");
-    }
-    await this.#_prisma.section.create({
-      data: {
-        title: data.title,
-        courseId: data.courseId,
-        order: data.order,
-      },
-    });
-  }
+    const skip = (Number(payload.pageNumber) - 1) * Number(payload.pageSize);
+    const take = Number(payload.pageSize);
 
-  async getSections(courseId: string): Promise<GetSectionResponse[]> {
     const sections = await this.#_prisma.section.findMany({
-      where: { courseId },
+      where: { courseId: payload.courseId },
       include: {
         lessons: true,
       },
+      skip,
+      take,
     });
 
-    return sections.map((section) => ({
+    const sectionsResponse = sections.map((section) => ({
       id: section.id,
       title: section.title,
       order: section.order,
@@ -44,35 +37,13 @@ export class SectionService {
         freePreview: lesson.freePreview,
       })),
     }));
-  }
 
-  async updateSection(id: string, data: SectionUpdate): Promise<void> {
-    const section = await this.#_prisma.section.findUnique({
-      where: { id },
-    });
-
-    if (!section) {
-      throw new NotFoundException("Section not found");
-    }
-
-    await this.#_prisma.section.update({
-      where: { id },
-      data,
-    });
-  }
-
-  async deleteSection(id: string): Promise<void> {
-    const section = await this.#_prisma.section.findUnique({
-      where: { id },
-    });
-
-    if (!section) {
-      throw new NotFoundException("Section not found");
-    }
-
-    await this.#_prisma.section.delete({
-      where: { id },
-    });
+    return {
+      data: sectionsResponse,
+      total: sections.length,
+      pageNumber: Number(payload.pageNumber),
+      pageSize: Number(payload.pageSize),
+    };
   }
 
   async getSection(id: string): Promise<GetSectionResponse> {

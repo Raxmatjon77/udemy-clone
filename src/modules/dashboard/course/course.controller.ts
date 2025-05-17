@@ -16,7 +16,7 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { PaginationResponse } from "@modules";
 import { GetCourseResponse } from "./interfaces";
 
-@Controller("course")
+@Controller("dashboard/course")
 export class CourseController {
   readonly #_service: CourseService;
 
