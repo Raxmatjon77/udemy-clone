@@ -25,4 +25,24 @@ export class LessonService {
 
     return lesson;
   }
+
+  async getLessons(sectionId: string): Promise<GetLessonResponse[]> {
+    const lessons = await this.#_prisma.lesson.findMany({
+      where: { sectionId, deletedAt: null },
+      select: {
+        id: true,
+        title: true,
+        videoUrl: true,
+        freePreview: true,
+        sectionId: true,
+        order: true,
+        comments: true,
+      },
+      orderBy: {
+        order: "asc",
+      },
+    });
+
+    return lessons;
+  }
 }

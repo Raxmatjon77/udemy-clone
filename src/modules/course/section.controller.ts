@@ -1,13 +1,4 @@
-import {
-  Controller,
-  Post,
-  Body,
-  Get,
-  Query,
-  Param,
-  Delete,
-  Patch,
-} from "@nestjs/common";
+import { Controller, Get, Query, Param } from "@nestjs/common";
 import { SectionService } from "./section.service";
 import { GetSectionResponse } from "./interfaces";
 import { PaginationResponse } from "@modules";
@@ -22,9 +13,9 @@ export class SectionController {
   async getSections(
     @Query("courseId") courseId: string,
     @Query("pageNumber") pageNumber: number,
-    @Query("pageSize") pageSize: number
+    @Query("pageSize") pageSize: number,
   ): Promise<PaginationResponse<GetSectionResponse>> {
-    return this.#service.getSections({courseId, pageNumber, pageSize});
+    return this.#service.getSections({ courseId, pageNumber, pageSize });
   }
 
   @Get(":id")

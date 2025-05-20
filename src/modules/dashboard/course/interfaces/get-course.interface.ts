@@ -18,5 +18,13 @@ export interface GetCourseResponse {
   sections: {
     id: string;
     title: string;
+    lessons: {
+      id: string;
+      title: string;
+      videoUrl: string;
+      freePreview: boolean;
+      order: number;
+      sectionId: string;
+    }[];
   }[];
 }

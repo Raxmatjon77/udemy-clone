@@ -1,2 +1,1 @@
-
 export * from "./lesson.interface";

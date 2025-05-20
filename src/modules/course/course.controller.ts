@@ -1,5 +1,6 @@
-import { Controller, Get, Param } from "@nestjs/common";
+import { Controller, Get, Param, Query } from "@nestjs/common";
 import { CourseService } from "./course.service";
+import { PaginationRequest } from "@modules/common";
 
 @Controller("course")
 export class CourseController {
@@ -10,8 +11,8 @@ export class CourseController {
   }
 
   @Get()
-  async getCourses() {
-    return this.#_service.getCourses();
+  async getCourses(@Query() query: PaginationRequest) {
+    return this.#_service.getCourses(query);
   }
 
   @Get(":id")

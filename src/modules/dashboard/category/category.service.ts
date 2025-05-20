@@ -23,7 +23,7 @@ export class CategoryService {
   }
 
   async getCategories(
-    payload: PaginationRequest
+    payload: PaginationRequest,
   ): Promise<PaginationResponse<Category>> {
     let { pageNumber, pageSize } = payload;
 
@@ -32,7 +32,7 @@ export class CategoryService {
 
     const skip = (Number(pageNumber) - 1) * Number(pageSize);
     const take = Number(pageSize);
-    
+
     const categories = await this.#_prisma.category.findMany({
       orderBy: {
         createdAt: "desc",
@@ -69,7 +69,7 @@ export class CategoryService {
 
   async createCategory(
     payload: CreateCategoryRequest,
-    image: Express.Multer.File
+    image: Express.Multer.File,
   ): Promise<void> {
     const category = await this.#_prisma.category.findUnique({
       where: { slug: payload.slug },

@@ -18,8 +18,8 @@ export class CourseService {
   }
 
   async createCourse(
-    data: CreateCourseRequest, 
-    image: Express.Multer.File
+    data: CreateCourseRequest,
+    image: Express.Multer.File,
   ): Promise<void> {
     if (!image) {
       throw new BadRequestException("Image is required");
@@ -102,6 +102,16 @@ export class CourseService {
           select: {
             id: true,
             title: true,
+            lessons: {
+              select: {
+                id: true,
+                title: true,
+                videoUrl: true,
+                freePreview: true,
+                order: true,
+                sectionId: true,
+              },
+            },
           },
         },
       },
@@ -115,7 +125,7 @@ export class CourseService {
   }
 
   async getCourses(
-    payload: PaginationRequest
+    payload: PaginationRequest,
   ): Promise<PaginationResponse<GetCourseResponse>> {
     let { pageNumber, pageSize } = payload;
 
@@ -124,7 +134,9 @@ export class CourseService {
 
     const skip = (Number(pageNumber) - 1) * Number(pageSize);
     const take = Number(pageSize);
-    const courses = await this.#_prisma.course.findMany({
+
+    const [courses, total] = await Promise.all([
+    this.#_prisma.course.findMany({
       where: { deletedAt: null },
       skip,
       take,
@@ -134,7 +146,7 @@ export class CourseService {
       select: {
         id: true,
         title: true,
-        slug : true,
+        slug: true,
         desc: true,
         price: true,
         thumbnail: true,
@@ -156,14 +168,34 @@ export class CourseService {
           select: {
             id: true,
             title: true,
+            lessons: {
+              select: {
+                id: true,
+                title: true,
+                videoUrl: true,
+                freePreview: true,
+                order: true,
+                sectionId: true,
+              },
+              orderBy: {
+                order: "asc",
+              },
+            },
+          },
+          orderBy:{
+            order: "asc",
+            }
           },
         },
-      },
-    });
+      }),
+      this.#_prisma.course.count({
+        where: { deletedAt: null },
+      }),
+    ]);
 
     return {
-      data: courses,
-      total: courses.length,
+      data: courses || [],
+      total: total || 0,
       pageNumber: Number(pageNumber) || 1,
       pageSize: Number(pageSize) || 10,
     };
@@ -172,7 +204,7 @@ export class CourseService {
   async updateCourse(
     id: string,
     data: UpdateCourseRequest,
-    image: Express.Multer.File | undefined
+    image: Express.Multer.File | undefined,
   ): Promise<void> {
     const existingCourse = await this.#_prisma.course.findUnique({
       where: { id },

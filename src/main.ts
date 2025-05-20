@@ -2,7 +2,7 @@ import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import { ValidationPipe } from "@nestjs/common";
 import * as bodyParser from "body-parser";
-
+import { sign } from "crypto";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -18,6 +18,8 @@ async function bootstrap() {
 
   app.setGlobalPrefix("api/v1");
   // app.useGlobalInterceptors(new LoggerInterceptor());
+
+  app.enableShutdownHooks()
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();

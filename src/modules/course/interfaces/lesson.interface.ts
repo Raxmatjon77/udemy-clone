@@ -1,4 +1,5 @@
 import { Comment } from "@prisma/client";
+
 export interface GetLessonResponse {
   id: string;
   title: string;

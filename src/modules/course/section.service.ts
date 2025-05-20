@@ -9,10 +9,13 @@ export class SectionService {
     this.#_prisma = prisma;
   }
 
-  async getSections(payload: {courseId: string, pageNumber: number, pageSize: number}): Promise<PaginationResponse<GetSectionResponse>> {
-    
-    if(!payload.pageNumber) payload.pageNumber = 1;
-    if(!payload.pageSize) payload.pageSize = 10;
+  async getSections(payload: {
+    courseId: string;
+    pageNumber: number;
+    pageSize: number;
+  }): Promise<PaginationResponse<GetSectionResponse>> {
+    if (!payload.pageNumber) payload.pageNumber = 1;
+    if (!payload.pageSize) payload.pageSize = 10;
 
     const skip = (Number(payload.pageNumber) - 1) * Number(payload.pageSize);
     const take = Number(payload.pageSize);
