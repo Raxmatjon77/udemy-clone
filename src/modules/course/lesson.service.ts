@@ -1,12 +1,12 @@
-import { Injectable } from "@nestjs/common";
-import { PrismaService } from "@prisma";
-import { GetLessonResponse } from "./interfaces";
+import { Injectable } from '@nestjs/common'
+import { PrismaService } from '@prisma'
+import { GetLessonResponse } from './interfaces'
 
 @Injectable()
 export class LessonService {
-  readonly #_prisma: PrismaService;
+  readonly #_prisma: PrismaService
   constructor(prisma: PrismaService) {
-    this.#_prisma = prisma;
+    this.#_prisma = prisma
   }
 
   async getLesson(id: string): Promise<GetLessonResponse> {
@@ -21,9 +21,9 @@ export class LessonService {
         order: true,
         comments: true,
       },
-    });
+    })
 
-    return lesson;
+    return lesson
   }
 
   async getLessons(sectionId: string): Promise<GetLessonResponse[]> {
@@ -39,10 +39,10 @@ export class LessonService {
         comments: true,
       },
       orderBy: {
-        order: "asc",
+        order: 'asc',
       },
-    });
+    })
 
-    return lessons;
+    return lessons
   }
 }

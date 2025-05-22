@@ -1,9 +1,15 @@
-import { Controller, Get } from "@nestjs/common";
+import { jobsService } from '@modules'
+import { Controller, Get } from '@nestjs/common'
 
-@Controller("health")
+@Controller('health')
 export class HealthController {
-  @Get("ping")
+  readonly #_service: jobsService
+  constructor(service: jobsService) {
+    this.#_service = service
+  }
+  @Get('ping')
   async ping() {
-    return "pong";
+    this.#_service.sendWelcomeEmail('hamidov.inbox@gmail.com')
+    return 'pong'
   }
 }

@@ -1,39 +1,39 @@
-import { UpdateCourseRequest } from "../interfaces";
-import { Type } from "class-transformer";
-import { IsString, IsOptional, IsNumber, IsBoolean } from "class-validator";
+import { UpdateCourseRequest } from '../interfaces'
+import { Type } from 'class-transformer'
+import { IsString, IsOptional, IsNumber, IsBoolean } from 'class-validator'
 
 export class UpdateCourseDto implements UpdateCourseRequest {
   @IsString()
   @IsOptional()
-  title?: string;
+  title?: string
 
   @IsString()
   @IsOptional()
-  slug?: string;
+  slug?: string
 
   @IsString()
   @IsOptional()
-  desc?: string;
+  desc?: string
 
   @IsNumber()
   @IsOptional()
   @Type(() => Number)
-  price?: number;
+  price?: number
 
   @IsString()
   @IsOptional()
-  thumbnail?: string;
+  thumbnail?: string
 
   @IsBoolean()
   @IsOptional()
   @Type(() => Boolean)
-  isPublished?: boolean;
+  isPublished?: boolean
 
   @IsString()
   @IsOptional()
-  categoryId?: string;
+  categoryId?: string
 
   @IsString()
   @IsOptional()
-  authorId?: string;
+  authorId?: string
 }

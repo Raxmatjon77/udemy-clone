@@ -1,20 +1,20 @@
-import { IsString, IsNotEmpty, IsNumber } from "class-validator";
-import { SectionCreate } from "../interfaces";
+import { IsString, IsNotEmpty, IsNumber } from 'class-validator'
+import { SectionCreate } from '../interfaces'
 
 export class SectionCreateDto implements SectionCreate {
   @IsString()
   @IsNotEmpty()
-  title: string;
+  title: string
 
   @IsString()
   @IsNotEmpty()
-  description: string;
+  description: string
 
   @IsString()
   @IsNotEmpty()
-  courseId: string;
+  courseId: string
 
   @IsNumber()
   @IsNotEmpty()
-  order: number;
+  order: number
 }

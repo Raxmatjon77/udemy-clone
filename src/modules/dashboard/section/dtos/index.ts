@@ -1,2 +1,2 @@
-export * from "./section-create";
-export * from "./section-update.dto";
+export * from './section-create'
+export * from './section-update.dto'

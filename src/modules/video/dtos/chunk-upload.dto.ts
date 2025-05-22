@@ -1,14 +1,12 @@
-import { IsString } from "class-validator";
-import { VideoUploadChunk } from "../interfaces";
-export class ChunkUploadDto
-  implements Omit<Omit<VideoUploadChunk, "bucket">, "body">
-{
+import { IsString } from 'class-validator'
+import { VideoUploadChunk } from '../interfaces'
+export class ChunkUploadDto implements Omit<Omit<VideoUploadChunk, 'bucket'>, 'body'> {
   @IsString()
-  key: string;
+  key: string
 
   @IsString()
-  uploadId: string;
+  uploadId: string
 
   @IsString()
-  partNumber: string;
+  partNumber: string
 }

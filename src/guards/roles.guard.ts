@@ -1,12 +1,7 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  Injectable,
-  ForbiddenException,
-} from "@nestjs/common";
-import { Reflector } from "@nestjs/core";
-import { Role } from "@enums";
-import { ROLES_KEY } from "@decorators";
+import { CanActivate, ExecutionContext, Injectable, ForbiddenException } from '@nestjs/common'
+import { Reflector } from '@nestjs/core'
+import { Role } from '@enums'
+import { ROLES_KEY } from '@decorators'
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -16,17 +11,17 @@ export class RolesGuard implements CanActivate {
     const requiredRoles = this.reflector.getAllAndOverride<Role[]>(ROLES_KEY, [
       context.getHandler(),
       context.getClass(),
-    ]);
+    ])
 
-    if (!requiredRoles || requiredRoles.length === 0) return true;
+    if (!requiredRoles || requiredRoles.length === 0) return true
 
-    const request = context.switchToHttp().getRequest();
-    const user = request.user;
+    const request = context.switchToHttp().getRequest()
+    const user = request.user
 
     if (!user || !requiredRoles.includes(user.role)) {
-      throw new ForbiddenException("You do not have access to this resource");
+      throw new ForbiddenException('You do not have access to this resource')
     }
 
-    return true;
+    return true
   }
 }

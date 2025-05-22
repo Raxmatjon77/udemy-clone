@@ -1,11 +1,11 @@
-import { Controller, Get, Param } from "@nestjs/common";
+import { Controller } from '@nestjs/common'
 
-@Controller("lessons")
+@Controller('lessons')
 export class LessonController {
-//   readonly #_service: LessonService;
-//   constructor(service: LessonService) {
-    // this.#_service = service;
-  }
+  //   readonly #_service: LessonService;
+  //   constructor(service: LessonService) {
+  // this.#_service = service;
+}
 
 //   @Get(":id")
 //   async getLesson(@Param("id") id: string): Promise<GetLessonResponse> {
@@ -16,4 +16,3 @@ export class LessonController {
 //   async getLessons(@Param("sectionId") sectionId: string): Promise<GetLessonResponse[]> {
 //     return this.#_service.getLessons(sectionId);
 //   }
-
