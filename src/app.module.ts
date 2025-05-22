@@ -1,7 +1,7 @@
-import { Module } from "@nestjs/common";
-import { AppController } from "./app.controller";
-import { AppService } from "./app.service";
-import { PrismaModule } from "@prisma";
+import { Module } from '@nestjs/common'
+import { AppController } from './app.controller'
+import { AppService } from './app.service'
+import { PrismaModule } from '@prisma'
 import {
   AuthModule,
   UserModule,
@@ -10,7 +10,11 @@ import {
   DashboardModule,
   VideoModule,
   HealthModule,
-} from "@modules";
+  JobsModule,
+} from '@modules'
+import { BullBoardModule } from '@bull-board/nestjs'
+import { ExpressAdapter } from '@bull-board/express'
+import { BullModule } from '@nestjs/bullmq'
 
 @Module({
   imports: [
@@ -22,6 +26,17 @@ import {
     DashboardModule,
     CourseModule,
     HealthModule,
+    JobsModule,
+    BullModule.forRoot({
+      connection: {
+        host: 'localhost',
+        port: 6379,
+      },
+    }),
+    BullBoardModule.forRoot({
+      route: '/queues',
+      adapter: ExpressAdapter,
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,10 +1,10 @@
-import { IsString, IsEmail } from "class-validator";
-import { UserUpdateInterface } from "../interfaces";
+import { IsString, IsEmail } from 'class-validator'
+import { UserUpdateInterface } from '../interfaces'
 
-export class UserUpdateDto implements Omit<UserUpdateInterface, "id"> {
+export class UserUpdateDto implements Omit<UserUpdateInterface, 'id'> {
   @IsString()
-  name: string;
+  name: string
 
   @IsEmail()
-  email: string;
+  email: string
 }

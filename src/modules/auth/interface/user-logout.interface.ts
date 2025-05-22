@@ -1,3 +1,3 @@
 export interface UserLogoutInterface {
-  userId: string;
+  userId: string
 }

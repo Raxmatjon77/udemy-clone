@@ -1,16 +1,12 @@
-import { Injectable } from "@nestjs/common";
-import { PrismaService } from "@prisma";
-import {
-  CreateLessonRequest,
-  GetLessonResponse,
-  UpdateLessonRequest,
-} from "./interfaces";
+import { Injectable } from '@nestjs/common'
+import { PrismaService } from '@prisma'
+import { CreateLessonRequest, GetLessonResponse, UpdateLessonRequest } from './interfaces'
 
 @Injectable()
 export class LessonService {
-  readonly #_prisma: PrismaService;
+  readonly #_prisma: PrismaService
   constructor(prisma: PrismaService) {
-    this.#_prisma = prisma;
+    this.#_prisma = prisma
   }
 
   async createLesson(data: CreateLessonRequest): Promise<void> {
@@ -22,7 +18,7 @@ export class LessonService {
         sectionId: data.sectionId,
         order: data.order,
       },
-    });
+    })
   }
 
   async getLesson(id: string): Promise<GetLessonResponse> {
@@ -37,16 +33,16 @@ export class LessonService {
         order: true,
         comments: true,
       },
-    });
+    })
 
-    return lesson;
+    return lesson
   }
 
   async updateLesson(id: string, data: UpdateLessonRequest): Promise<void> {
     await this.#_prisma.lesson.update({
       where: { id },
       data,
-    });
+    })
   }
 
   async getLessons(sectionId: string): Promise<GetLessonResponse[]> {
@@ -61,9 +57,8 @@ export class LessonService {
         order: true,
         comments: true,
       },
-    });
+    })
 
-    return lessons;
+    return lessons
   }
-  
 }

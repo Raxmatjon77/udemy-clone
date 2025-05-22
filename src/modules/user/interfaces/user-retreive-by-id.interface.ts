@@ -1,9 +1,9 @@
 export interface UserRetreiveByIdRequestInterface {
-  id: string;
+  id: string
 }
 
 export interface UserRetreiveByIdResponseInterface {
-  id: string;
-  email: string;
-  name: string;
+  id: string
+  email: string
+  name: string
 }

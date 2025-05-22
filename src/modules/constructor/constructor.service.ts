@@ -1,12 +1,12 @@
-import { Injectable } from "@nestjs/common";
-import { PrismaService } from "@prisma";
+import { Injectable } from '@nestjs/common'
+import { PrismaService } from '@prisma'
 
 @Injectable()
 export class ConstructorService {
-  readonly #_prisma: PrismaService;
+  readonly #_prisma: PrismaService
 
   constructor(prisma: PrismaService) {
-    this.#_prisma = prisma;
+    this.#_prisma = prisma
   }
 
   //   async createConstructor(payload: ConstructorCreateInterface): Promise<void> {

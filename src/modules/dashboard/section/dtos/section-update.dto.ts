@@ -1,12 +1,12 @@
-import { IsNumber, IsString } from "class-validator";
-import { SectionUpdate } from "../interfaces";
+import { IsNumber, IsString } from 'class-validator'
+import { SectionUpdate } from '../interfaces'
 export class SectionUpdateDto implements SectionUpdate {
   @IsString()
-  title: string;
+  title: string
 
   @IsNumber()
-  order: number;
+  order: number
 
   @IsString()
-  courseId: string;
+  courseId: string
 }

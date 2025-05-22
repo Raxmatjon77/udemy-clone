@@ -1,1 +1,1 @@
-export * from "./video.upload.interface";
+export * from './video.upload.interface'

@@ -1,1 +1,1 @@
-export * from "./hash-data.helper";
+export * from './hash-data.helper'

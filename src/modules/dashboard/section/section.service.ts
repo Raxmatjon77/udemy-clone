@@ -1,20 +1,20 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
-import { PrismaService } from "@prisma";
-import { GetSectionResponse, SectionCreate, SectionUpdate } from "./interfaces";
+import { Injectable, NotFoundException } from '@nestjs/common'
+import { PrismaService } from '@prisma'
+import { GetSectionResponse, SectionCreate, SectionUpdate } from './interfaces'
 @Injectable()
 export class SectionService {
-  readonly #_prisma: PrismaService;
+  readonly #_prisma: PrismaService
   constructor(prisma: PrismaService) {
-    this.#_prisma = prisma;
+    this.#_prisma = prisma
   }
 
   async createSection(data: SectionCreate): Promise<void> {
     const course = await this.#_prisma.course.findUnique({
       where: { id: data.courseId },
-    });
+    })
 
     if (!course) {
-      throw new NotFoundException("Course not found");
+      throw new NotFoundException('Course not found')
     }
     await this.#_prisma.section.create({
       data: {
@@ -22,7 +22,7 @@ export class SectionService {
         courseId: data.courseId,
         order: data.order,
       },
-    });
+    })
   }
 
   async getSections(courseId: string): Promise<GetSectionResponse[]> {
@@ -31,7 +31,7 @@ export class SectionService {
       include: {
         lessons: true,
       },
-    });
+    })
 
     return sections.map((section) => ({
       id: section.id,
@@ -43,36 +43,36 @@ export class SectionService {
         order: lesson.order,
         freePreview: lesson.freePreview,
       })),
-    }));
+    }))
   }
 
   async updateSection(id: string, data: SectionUpdate): Promise<void> {
     const section = await this.#_prisma.section.findUnique({
       where: { id },
-    });
+    })
 
     if (!section) {
-      throw new NotFoundException("Section not found");
+      throw new NotFoundException('Section not found')
     }
 
     await this.#_prisma.section.update({
       where: { id },
       data,
-    });
+    })
   }
 
   async deleteSection(id: string): Promise<void> {
     const section = await this.#_prisma.section.findUnique({
       where: { id },
-    });
+    })
 
     if (!section) {
-      throw new NotFoundException("Section not found");
+      throw new NotFoundException('Section not found')
     }
 
     await this.#_prisma.section.delete({
       where: { id },
-    });
+    })
   }
 
   async getSection(id: string): Promise<GetSectionResponse> {
@@ -81,10 +81,10 @@ export class SectionService {
       include: {
         lessons: true,
       },
-    });
+    })
 
     if (!section) {
-      throw new NotFoundException("Section not found");
+      throw new NotFoundException('Section not found')
     }
 
     return {
@@ -97,6 +97,6 @@ export class SectionService {
         order: lesson.order,
         freePreview: lesson.freePreview,
       })),
-    };
+    }
   }
 }

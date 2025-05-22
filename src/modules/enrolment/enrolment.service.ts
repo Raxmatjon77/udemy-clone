@@ -1,7 +1,7 @@
-import { BadRequestException, Injectable } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { PrismaService } from '@prisma/prisma.service'
 import { MinioService } from '@clients'
-import { PaginationRequest, PaginationResponse } from '@modules/common'
+// import { PaginationRequest, PaginationResponse } from '@modules/common'
 
 @Injectable()
 export class CourseService {
@@ -11,5 +11,4 @@ export class CourseService {
     this.#_prisma = prisma
     this.#_minio = minio
   }
-
 }

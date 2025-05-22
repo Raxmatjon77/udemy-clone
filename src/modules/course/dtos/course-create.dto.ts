@@ -1,38 +1,38 @@
-import { IsString, IsNotEmpty, IsBoolean, IsNumber } from "class-validator";
-import { CreateCourseRequest } from "../interfaces";
-import { Type } from "class-transformer";
-export class CreateCourseDto implements Omit<CreateCourseRequest, "image"> {
+import { IsString, IsNotEmpty, IsBoolean, IsNumber } from 'class-validator'
+import { CreateCourseRequest } from '../interfaces'
+import { Type } from 'class-transformer'
+export class CreateCourseDto implements Omit<CreateCourseRequest, 'image'> {
   @IsString()
   @IsNotEmpty()
-  title: string;
+  title: string
 
   @IsString()
   @IsNotEmpty()
-  slug: string;
+  slug: string
 
   @IsString()
   @IsNotEmpty()
-  desc: string;
+  desc: string
 
   @IsNumber()
   @Type(() => Number)
   @IsNotEmpty()
-  price: number;
+  price: number
 
   @IsString()
   @IsNotEmpty()
-  thumbnail: string;
+  thumbnail: string
 
   @IsBoolean()
   @Type(() => Boolean)
   @IsNotEmpty()
-  isPublished: boolean;
+  isPublished: boolean
 
   @IsString()
   @IsNotEmpty()
-  categoryId: string;
+  categoryId: string
 
   @IsString()
   @IsNotEmpty()
-  authorId: string;
+  authorId: string
 }

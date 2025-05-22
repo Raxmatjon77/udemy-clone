@@ -1,5 +1,5 @@
 export interface UserUpdateInterface {
-  id: string;
-  name: string;
-  email: string;
+  id: string
+  name: string
+  email: string
 }

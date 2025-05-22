@@ -1,46 +1,46 @@
-import { IsString, IsNotEmpty, IsBoolean, IsNumber, IsOptional } from "class-validator";
-import { CreateLessonRequest, UpdateLessonRequest } from "../interfaces";
+import { IsString, IsNotEmpty, IsBoolean, IsNumber, IsOptional } from 'class-validator'
+import { CreateLessonRequest, UpdateLessonRequest } from '../interfaces'
 
 export class CreateLessonDto implements CreateLessonRequest {
   @IsString()
   @IsNotEmpty()
-  title: string;
+  title: string
 
   @IsString()
   @IsNotEmpty()
-  videoUrl: string;
+  videoUrl: string
 
   @IsBoolean()
   @IsNotEmpty()
-  freePreview: boolean;
+  freePreview: boolean
 
   @IsString()
   @IsNotEmpty()
-  sectionId: string;
+  sectionId: string
 
   @IsNumber()
   @IsNotEmpty()
-  order: number;
+  order: number
 }
 
 export class UpdateLessonDto implements UpdateLessonRequest {
   @IsString()
   @IsNotEmpty()
-  title: string;
+  title: string
 
   @IsString()
   @IsOptional()
-  videoUrl: string;
+  videoUrl: string
 
   @IsBoolean()
   @IsOptional()
-  freePreview: boolean;
+  freePreview: boolean
 
   @IsString()
   @IsOptional()
-  sectionId: string;
+  sectionId: string
 
   @IsNumber()
   @IsOptional()
-  order: number;
+  order: number
 }
