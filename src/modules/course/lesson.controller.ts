@@ -1,6 +1,7 @@
-import { Controller, Get, Param } from '@nestjs/common'
+import { Controller, Get, Param, Req } from '@nestjs/common'
 import { LessonService } from './lesson.service'
 import { GetLessonResponse } from './interfaces'
+import { CustomUser } from '@modules/common'
 
 @Controller('lessons')
 export class LessonController {
@@ -10,8 +11,8 @@ export class LessonController {
   }
 
   @Get(':id')
-  async getLesson(@Param('id') id: string): Promise<GetLessonResponse> {
-    return this.#_service.getLesson(id)
+  async getLesson(@Param('id') id: string, @Req() req: CustomUser): Promise<GetLessonResponse> {
+    return this.#_service.getLesson({userId:req.user.id,id})
   }
 
   @Get('section/:sectionId')

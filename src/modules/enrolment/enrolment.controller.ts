@@ -27,4 +27,5 @@ export class EnrollMentController {
   ): Promise<PaginationResponse<Enrollment>> {
     return this.#_service.getEnrollments({ ...param, userId: req.user.id })
   }
+  
 }

@@ -9,21 +9,31 @@ export class LessonService {
     this.#_prisma = prisma
   }
 
-  async getLesson(id: string): Promise<GetLessonResponse> {
-    const lesson = await this.#_prisma.lesson.findUnique({
-      where: { id },
-      select: {
-        id: true,
-        title: true,
-        videoUrl: true,
-        freePreview: true,
-        sectionId: true,
-        order: true,
-        comments: true,
-      },
-    })
+  async getLesson(payload: { id: string; userId: string }): Promise<GetLessonResponse> {
+    const [lesson, progress] = await Promise.all([
+      this.#_prisma.lesson.findUnique({
+        where: { id: payload.id },
+        select: {
+          id: true,
+          title: true,
+          videoUrl: true,
+          freePreview: true,
+          sectionId: true,
+          order: true,
+          comments: true,
+        },
+      }),
+      this.#_prisma.progress.findFirst({
+        where: { userId: payload.userId, lessonId: payload.id },
+        select: {
+          id: true,
+          completed: true,
+        },
+      }),
+    ])
 
-    return lesson
+    return { ...lesson, completed: progress.completed }
+
   }
 
   async getLessons(sectionId: string): Promise<GetLessonResponse[]> {

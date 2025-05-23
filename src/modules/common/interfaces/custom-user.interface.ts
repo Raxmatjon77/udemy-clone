@@ -3,9 +3,5 @@ export interface CustomUser {
     id: string
     email: string
     role: string
-    ip: string
-    userAgent: string
-    createdAt: Date
-    updatedAt: Date
   }
 }
