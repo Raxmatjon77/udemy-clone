@@ -7,7 +7,7 @@ export interface GetLessonResponse {
   sectionId: string
   order: number
   freePreview: boolean
-  completed?:boolean
+  completed?: boolean
   comments?: Comment[]
 }
 

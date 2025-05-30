@@ -33,7 +33,6 @@ export class LessonService {
     ])
 
     return { ...lesson, completed: progress.completed }
-
   }
 
   async getLessons(sectionId: string): Promise<GetLessonResponse[]> {

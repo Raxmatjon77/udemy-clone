@@ -12,7 +12,7 @@ export class LessonController {
 
   @Get(':id')
   async getLesson(@Param('id') id: string, @Req() req: CustomUser): Promise<GetLessonResponse> {
-    return this.#_service.getLesson({userId:req.user.id,id})
+    return this.#_service.getLesson({ userId: req.user.id, id })
   }
 
   @Get('section/:sectionId')

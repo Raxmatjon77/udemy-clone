@@ -12,6 +12,7 @@ import {
   HealthModule,
   JobsModule,
   EnrollMentModule,
+  ReviewModule,
 } from '@modules'
 import { BullBoardModule } from '@bull-board/nestjs'
 import { ExpressAdapter } from '@bull-board/express'
@@ -20,6 +21,7 @@ import { BullModule } from '@nestjs/bullmq'
 @Module({
   imports: [
     VideoModule,
+    ReviewModule,
     PrismaModule,
     AuthModule,
     UserModule,
