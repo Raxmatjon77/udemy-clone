@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core'
 import { AppModule } from './app.module'
 import { ValidationPipe } from '@nestjs/common'
 import * as bodyParser from 'body-parser'
+import { LoggerInterceptor } from '@interceptors'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
@@ -16,7 +17,7 @@ async function bootstrap() {
   })
 
   app.setGlobalPrefix('api/v1')
-  // app.useGlobalInterceptors(new LoggerInterceptor());
+  app.useGlobalInterceptors(new LoggerInterceptor());
 
   app.enableShutdownHooks()
   await app.listen(6001)

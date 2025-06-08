@@ -13,6 +13,7 @@ import {
   JobsModule,
   EnrollMentModule,
   ReviewModule,
+  ChatModule,
 } from '@modules'
 import { BullBoardModule } from '@bull-board/nestjs'
 import { ExpressAdapter } from '@bull-board/express'
@@ -30,6 +31,7 @@ import { BullModule } from '@nestjs/bullmq'
     CourseModule,
     HealthModule,
     EnrollMentModule,
+    ChatModule,
     JobsModule,
     BullModule.forRoot({
       connection: {
