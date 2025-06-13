@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: udemy-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: udemy-backend
+  template:
+    metadata:
+      labels:
+        app: udemy-backend
+    spec:
+      containers:
+        - name: udemy-backend
+          image: registry.gitlab.com/raxmatjon/your-repo:latest
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - secretRef:
+                name: udemy-env

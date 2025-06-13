@@ -28,7 +28,6 @@ export class MinioService {
 
     return objectName
   }
-
   async getFileUrl(bucket: string, objectName: string): Promise<string> {
     return await this.minioClient.presignedGetObject(bucket, objectName)
   }
