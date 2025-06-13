@@ -1,16 +1,38 @@
-# You can override the included template(s) by including variable overrides
-# SAST customization: https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
-# Secret Detection customization: https://docs.gitlab.com/user/application_security/secret_detection/pipeline/configure
-# Dependency Scanning customization: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
-# Container Scanning customization: https://docs.gitlab.com/ee/user/application_security/container_scanning/#customizing-the-container-scanning-settings
-# Note that environment variables can be set in several places
-# See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
 stages:
-- test
-- secret-detection
+  - build
+  - migrate
+  - deploy
+
 variables:
-  SECRET_DETECTION_ENABLED: 'true'
-secret_detection:
-  stage: secret-detection
-include:
-- template: Security/Secret-Detection.gitlab-ci.yml
+  DOCKER_IMAGE: registry.gitlab.com/$CI_PROJECT_PATH/app:latest
+
+# 👇 This applies to all jobs by default
+only:
+    - main
+
+build:
+  stage: build
+  script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+    - docker build -t $DOCKER_IMAGE .
+    - docker push $DOCKER_IMAGE
+
+  only:
+    - main
+
+migrate:
+  stage: migrate
+  script:
+    - cd /app  # adjust this if your repo is somewhere else
+    - npx prisma migrate deploy
+
+  only:
+    - main
+deploy:
+  stage: deploy
+  script:
+    - kubectl set image deployment/udemy-backend udemy-backend=$DOCKER_IMAGE
+
+
+  only:
+    - main
