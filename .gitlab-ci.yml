@@ -6,9 +6,6 @@ stages:
 variables:
   DOCKER_IMAGE: registry.gitlab.com/$CI_PROJECT_PATH/app:latest
 
-# 👇 This applies to all jobs by default
-only:
-    - main
 
 build:
   stage: build
