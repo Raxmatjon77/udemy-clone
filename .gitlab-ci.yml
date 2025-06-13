@@ -8,7 +8,6 @@ variables:
 
 # 👇 This applies to all jobs by default
 default:
-  only:
     - main
 
 build:
