@@ -3,25 +3,18 @@ stages:
   - migrate
   - deploy
 
-services:
-  - docker:dind
-
 variables:
-  DOCKER_HOST: tcp://docker:2376
-  DOCKER_TLS_CERTDIR: "/certs"
-  DOCKER_TLS_VERIFY: 1
-  DOCKER_CERT_PATH: "$DOCKER_TLS_CERTDIR/client"
   DOCKER_IMAGE: registry.gitlab.com/$CI_PROJECT_PATH/app:latest
 
+before_script:
+  - docker --version
+  - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
 
 build:
   stage: build
   script:
-    - docker --version  # ✅ just to confirm it's available
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
     - docker build -t $DOCKER_IMAGE .
     - docker push $DOCKER_IMAGE
-  
   tags:
     - udemy1
   only:
@@ -30,20 +23,18 @@ build:
 migrate:
   stage: migrate
   script:
-    - cd /app  # adjust this if your repo is somewhere else
+    - cd $CI_PROJECT_DIR
     - npx prisma migrate deploy
-
   tags:
     - udemy1
   only:
     - main
+
 deploy:
   stage: deploy
   script:
     - kubectl set image deployment/udemy-backend udemy-backend=$DOCKER_IMAGE
-
   tags:
     - udemy1
-
   only:
     - main
