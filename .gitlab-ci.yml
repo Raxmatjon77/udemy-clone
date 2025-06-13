@@ -17,13 +17,22 @@ build:
     - docker build -t $DOCKER_IMAGE .
     - docker push $DOCKER_IMAGE
 
+  only:
+    - main
+
 migrate:
   stage: migrate
   script:
     - cd /app  # adjust this if your repo is somewhere else
     - npx prisma migrate deploy
 
+  only:
+    - main
 deploy:
   stage: deploy
   script:
     - kubectl set image deployment/udemy-backend udemy-backend=$DOCKER_IMAGE
+
+
+  only:
+    - main
