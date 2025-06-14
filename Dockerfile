@@ -24,6 +24,7 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/prisma ./prisma
 
-CMD ["node", "dist/main"]
+RUN  npx  prisma migrate deploy && node dist/main
+# CMD ["node", "dist/main"]
 
 EXPOSE 3000

@@ -42,7 +42,7 @@
 
 stages:
   - build
-  - migrate
+  # - migrate
   - deploy
 
 image: docker:20.10.24
@@ -73,14 +73,14 @@ build:
     - main
 
 # 🧱 2. Run Prisma Migrations (inside container)
-migrate:
-  stage: migrate
-  # tags:
-  #   - gcp-vm
-  script:
-     - docker run --rm -e DATABASE_URL="$DATABASE_URL" "$DOCKER_IMAGE" npx prisma migrate deploy
-  only:
-    - main
+# migrate:
+#   stage: migrate
+#   # tags:
+#   #   - gcp-vm
+#   script:
+#      - docker run --rm -e DATABASE_URL="$DATABASE_URL" "$DOCKER_IMAGE" npx prisma migrate deploy
+#   only:
+#     - main
 
 # 🚀 3. Deploy to Kubernetes
 deploy:
