@@ -3,11 +3,11 @@ stages:
   - migrate
   - deploy
 
-
 image: docker:20.10.24
 
 services:
-  - docker:20.10.24-dind
+  - name: docker:20.10.24-dind
+    alias: docker
 
 variables:
   DOCKER_IMAGE: registry.gitlab.com/$CI_PROJECT_PATH/app:latest
@@ -15,7 +15,6 @@ variables:
   DOCKER_TLS_CERTDIR: ""
 
 before_script:
-  # - apt install docker -y
   - docker --version
   - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
 
@@ -24,18 +23,13 @@ build:
   script:
     - docker build -t $DOCKER_IMAGE .
     - docker push $DOCKER_IMAGE
-  # tags:
-  #   - udemy1
   only:
     - main
 
 migrate:
   stage: migrate
   script:
-    - cd $CI_PROJECT_DIR
-    - npx prisma migrate deploy
-  # tags:
-  #   - udemy1
+    - docker run --rm $DOCKER_IMAGE npx prisma migrate deploy
   only:
     - main
 
@@ -43,7 +37,5 @@ deploy:
   stage: deploy
   script:
     - kubectl set image deployment/udemy-backend udemy-backend=$DOCKER_IMAGE
-  # tags:
-  #   - udemy1
   only:
     - main
