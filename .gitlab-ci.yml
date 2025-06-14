@@ -89,6 +89,18 @@ deploy:
   #   - gcp-vm
   script:
     - kubectl set image deployment/udemy-backend udemy-backend=$DOCKER_IMAGE
+    - kubectl set env deployment/udemy-backend \
+        DATABASE_URL="$DATABASE_URL" \
+        JWT_AT_SECRET="$JWT_AT_SECRET" \
+        JWT_RT_SECRET="$JWT_RT_SECRET" \
+        SCRYPT_SALT="$SCRYPT_SALT" \
+        SCRYPT_KEY="$SCRYPT_KEY" \
+        MINIO_USER="$MINIO_USER" \
+        MINIO_PASS="$MINIO_PASS" \
+        MINIO_PORT="$MINIO_PORT" \
+        MINIO_URL="$MINIO_URL" \
+        MINIO_BUCKET_VIDEO="$MINIO_BUCKET_VIDEO" 
+
     - kubectl rollout status deployment/udemy-backend
   only:
     - main
