@@ -20,3 +20,16 @@ spec:
           envFrom:
             - secretRef:
                 name: udemy-env
+          
+          env:
+            - name: DATABASE_URL
+              value: 'DATABASE_URL'
+            - name: MINIO_SERVICE_HOST
+              value: 'MINIO_SERVICE_HOST'
+            - name: MINIO_SERVICE_PORT
+              value: '9000'
+            - name: MINIO_SERVICE_ACCESS_KEY
+              value: 'SECRET_MINIO_SERVICE_ACCESS_KEY'
+            - name: MINIO_SERVICE_SECRET_KEY
+              value: 'SECRET_MINIO_SERVICE_SECRET_KEY'
+            - name: MINIO_SERVICE_BUCKET

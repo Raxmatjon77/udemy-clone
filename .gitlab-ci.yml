@@ -78,7 +78,10 @@ migrate:
   # tags:
   #   - gcp-vm
   script:
-    - docker run --rm $DOCKER_IMAGE npx prisma migrate deploy
+     - docker run --rm \
+        -e DATABASE_URL="$DATABASE_URL" \
+        $DOCKER_IMAGE \
+        npx prisma migrate deploy
   only:
     - main
 
