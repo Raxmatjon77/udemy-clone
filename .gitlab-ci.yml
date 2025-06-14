@@ -40,6 +40,11 @@
 #   only:
 #     - main
 
+stages:
+  - build
+  - migrate
+  - deploy
+
 image: docker:20.10.24
 
 services:
@@ -47,13 +52,43 @@ services:
     alias: docker
 
 variables:
+  IMAGE_TAG: $CI_COMMIT_SHORT_SHA
+  DOCKER_IMAGE: registry.gitlab.com/$CI_PROJECT_PATH/app:$IMAGE_TAG
   DOCKER_HOST: tcp://docker:2375/
   DOCKER_TLS_CERTDIR: ""
 
+before_script:
+  - docker --version
+  - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
+
+# 🛠️ 1. Build and Push Docker Image
 build:
   stage: build
   # tags:
   #   - gcp-vm
   script:
-    - docker info
-    - docker run hello-world
+    - docker build -t $DOCKER_IMAGE .
+    - docker push $DOCKER_IMAGE
+  only:
+    - main
+
+# 🧱 2. Run Prisma Migrations (inside container)
+migrate:
+  stage: migrate
+  # tags:
+  #   - gcp-vm
+  script:
+    - docker run --rm $DOCKER_IMAGE npx prisma migrate deploy
+  only:
+    - main
+
+# 🚀 3. Deploy to Kubernetes
+deploy:
+  stage: deploy
+  # tags:
+  #   - gcp-vm
+  script:
+    - kubectl set image deployment/udemy-backend udemy-backend=$DOCKER_IMAGE
+    - kubectl rollout status deployment/udemy-backend
+  only:
+    - main
