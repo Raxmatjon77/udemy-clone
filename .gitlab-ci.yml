@@ -87,7 +87,7 @@ deploy:
   stage: deploy
   # tags:
   image: bitnami/kubectl:latest
-  entrypoint: [""]
+  # entrypoint: [""]
   #   - gcp-vm
   script:
     - echo "$GCLOUD_SERVICE_KEY" | base64 -d > "$CI_PROJECT_DIR"/gcloud-key.json
