@@ -87,8 +87,11 @@ deploy:
   stage: deploy
   # tags:
   image: bitnami/kubectl:latest
+  entrypoint: [""]
   #   - gcp-vm
   script:
+    - echo "$GCLOUD_SERVICE_KEY" | base64 -d > "$CI_PROJECT_DIR"/gcloud-key.json
+    - gcloud auth activate-service-account --key-file=gcloud-key.json
     - kubectl version --client
     - kubectl config set-cluster ...
     - kubectl set image deployment/udemy-backend udemy-backend=$DOCKER_IMAGE
