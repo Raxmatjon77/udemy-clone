@@ -86,8 +86,11 @@ build:
 deploy:
   stage: deploy
   # tags:
+  image: bitnami/kubectl:latest
   #   - gcp-vm
   script:
+    - kubectl version --client
+    - kubectl config set-cluster ...
     - kubectl set image deployment/udemy-backend udemy-backend=$DOCKER_IMAGE
     - kubectl set env deployment/udemy-backend \
         DATABASE_URL="$DATABASE_URL" \
