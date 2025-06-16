@@ -31,34 +31,6 @@ build:
   only:
     - main
 
-# deploy:
-#   stage: deploy
-#   # tags:
-#   image: bitnami/kubectl:latest
-#   # entrypoint: [""]
-#   #   - gcp-vm
-#   script:
-#     - echo "$GCLOUD_SERVICE_KEY" | base64 -d > "$CI_PROJECT_DIR"/gcloud-key.json
-#     - gcloud auth activate-service-account --key-file=gcloud-key.json
-#     - kubectl version --client
-#     - kubectl config set-cluster ...
-#     - kubectl set image deployment/udemy-backend udemy-backend=$DOCKER_IMAGE
-#     - kubectl set env deployment/udemy-backend \
-#         DATABASE_URL="$DATABASE_URL" \
-#         JWT_AT_SECRET="$JWT_AT_SECRET" \
-#         JWT_RT_SECRET="$JWT_RT_SECRET" \
-#         SCRYPT_SALT="$SCRYPT_SALT" \
-#         SCRYPT_KEY="$SCRYPT_KEY" \
-#         MINIO_USER="$MINIO_USER" \
-#         MINIO_PASS="$MINIO_PASS" \
-#         MINIO_PORT="$MINIO_PORT" \
-#         MINIO_URL="$MINIO_URL" \
-#         MINIO_BUCKET_VIDEO="$MINIO_BUCKET_VIDEO" 
-
-#     - kubectl rollout status deployment/udemy-backend
-#   only:
-#     - main
-
 deploy:
   stage: deploy
   image: google/cloud-sdk:alpine
@@ -70,8 +42,8 @@ deploy:
   script:
     - echo "$GCLOUD_SERVICE_KEY" | base64 -d > "$CI_PROJECT_DIR"/gcloud-key.json
     - gcloud auth activate-service-account --key-file=gcloud-key.json
-    - gcloud config set project YOUR_PROJECT_ID
-    - gcloud container clusters get-credentials YOUR_CLUSTER_NAME --zone=YOUR_ZONE
+    - gcloud config set project "$GCP_PROJECT_ID"
+    - gcloud container clusters get-credentials YOUR_CLUSTER_NAME --zone='us-central1'
     - kubectl version --client
     - kubectl set image deployment/udemy-backend udemy-backend=$DOCKER_IMAGE
     - kubectl set env deployment/udemy-backend \
