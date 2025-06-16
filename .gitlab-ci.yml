@@ -48,17 +48,19 @@ deploy:
     - gcloud container clusters get-credentials "$GCP_CLUSTER_NAME" --zone "$GCP_ZONE"
     - kubectl version --client
     - kubectl delete secret udemy-env || true
-    - kubectl create secret generic udemy-env \
-      --from-literal=DATABASE_URL="$DATABASE_URL" \
-      --from-literal=JWT_AT_SECRET="$JWT_AT_SECRET" \
-      --from-literal=JWT_RT_SECRET="$JWT_RT_SECRET" \
-      --from-literal=SCRYPT_SALT="$SCRYPT_SALT" \
-      --from-literal=SCRYPT_KEY="$SCRYPT_KEY" \
-      --from-literal=MINIO_USER="$MINIO_USER" \
-      --from-literal=MINIO_PASS="$MINIO_PASS" \
-      --from-literal=MINIO_PORT="$MINIO_PORT" \
-      --from-literal=MINIO_URL="$MINIO_URL" \
-      --from-literal=MINIO_BUCKET_VIDEO="$MINIO_BUCKET_VIDEO"
+    - |
+      kubectl delete secret udemy-env || true
+      kubectl create secret generic udemy-env \
+        --from-literal=DATABASE_URL="$DATABASE_URL" \
+        --from-literal=JWT_AT_SECRET="$JWT_AT_SECRET" \
+        --from-literal=JWT_RT_SECRET="$JWT_RT_SECRET" \
+        --from-literal=SCRYPT_SALT="$SCRYPT_SALT" \
+        --from-literal=SCRYPT_KEY="$SCRYPT_KEY" \
+        --from-literal=MINIO_USER="$MINIO_USER" \
+        --from-literal=MINIO_PASS="$MINIO_PASS" \
+        --from-literal=MINIO_PORT="$MINIO_PORT" \
+        --from-literal=MINIO_URL="$MINIO_URL" \
+        --from-literal=MINIO_BUCKET_VIDEO="$MINIO_BUCKET_VIDEO"
 
     - kubectl apply -f k8s/deploy.yaml
     - kubectl set image deployment/udemy-backend udemy-backend=$DOCKER_IMAGE
