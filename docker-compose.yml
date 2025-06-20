@@ -3,17 +3,16 @@ stages:
   - deploy
 
 variables:
-  DOCKER_HOST: tcp://docker:2375/
-  DOCKER_TLS_CERTDIR: ""
   DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""  # Needed for DinD — safe to keep even if not used
 
 build:
   stage: build
-  image: docker:24.0.2
-  services:
-    - docker:24.0.2-dind
+  # tags:
+  #   - docker  # <-- Match this to your runner’s tag
   script:
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    - docker --version
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
     - docker build -t $CI_REGISTRY_IMAGE/app:latest .
     - docker push $CI_REGISTRY_IMAGE/app:latest
   only:
@@ -21,11 +20,9 @@ build:
 
 deploy:
   stage: deploy
-  image: docker:24.0.2
-  services:
-    - docker:24.0.2-dind
+  # tags:
+  #   - docker
   script:
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
     - docker stack deploy -c docker-compose.yml udemy
   only:
     - main
