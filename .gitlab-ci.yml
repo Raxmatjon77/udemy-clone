@@ -2,18 +2,21 @@ stages:
   - build
   - deploy
 
-variables:
-  DOCKER_DRIVER: overlay2
-  DOCKER_TLS_CERTDIR: ""  # Needed for DinD — safe to keep even if not used
-
 build:
   stage: build
   # tags:
-  #   - docker  # <-- Match this to your runner’s tag
+  #   - docker  # <- must match the tag you used during registration
   script:
+    - echo "⚙️ Docker version check:"
     - docker --version
+
+    - echo "🔐 Logging into GitLab Container Registry..."
     - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
+
+    - echo "📦 Building Docker image..."
     - docker build -t $CI_REGISTRY_IMAGE/app:latest .
+
+    - echo "📤 Pushing image..."
     - docker push $CI_REGISTRY_IMAGE/app:latest
   only:
     - main
@@ -23,6 +26,7 @@ deploy:
   # tags:
   #   - docker
   script:
+    - echo "🚀 Deploying to Docker Swarm..."
     - docker stack deploy -c docker-compose.yml udemy
   only:
     - main
