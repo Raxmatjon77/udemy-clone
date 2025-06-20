@@ -1,39 +1,28 @@
-# stages:
-#   - build
-#   - deploy
+stages:
+  - build
+  - deploy
 
-# build:
-#   stage: build
-#   # tags:
-#   #   - docker  # <- must match the tag you used during registration
-#   script:
-#     - echo "⚙️ Docker version check:"
-#     - docker --version
+variables:
+  DOCKER_DRIVER: overlay2
 
-#     - echo "🔐 Logging into GitLab Container Registry..."
-#     - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
-
-#     - echo "📦 Building Docker image..."
-#     - docker build -t $CI_REGISTRY_IMAGE/app:latest .
-
-#     - echo "📤 Pushing image..."
-#     - docker push $CI_REGISTRY_IMAGE/app:latest
-#   only:
-#     - main
-
-# deploy:
-#   stage: deploy
-#   # tags:
-#   #   - docker
-#   script:
-#     - echo "🚀 Deploying to Docker Swarm..."
-#     - docker stack deploy -c docker-compose.yml udemy
-#   only:
-#     - main
-
-test-runner:
-  stage: test
+build:
+  stage: build
+  image: docker:20.10.24
+  services:
+    - docker:20.10.24-dind
   script:
-    - echo "✅ Shell executor now works!"
-    - whoami
-    - pwd
+    - docker info
+    - docker build -t $CI_REGISTRY_IMAGE/backend:$CI_COMMIT_SHORT_SHA .
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+    - docker push $CI_REGISTRY_IMAGE/backend:$CI_COMMIT_SHORT_SHA
+
+deploy:
+  stage: deploy
+  image: docker:20.10.24
+  services:
+    - docker:20.10.24-dind
+  script:
+    - docker pull $CI_REGISTRY_IMAGE/backend:$CI_COMMIT_SHORT_SHA
+    - docker stack deploy -c docker-compose.yml udemy
+  only:
+    - main
