@@ -32,10 +32,8 @@
 #     - main
 
 test-runner:
-  stage: build
-  # tags:
-  #   - docker
+  stage: test
   script:
-    - echo "✅ Runner works!"
+    - echo "✅ Shell executor now works!"
     - whoami
     - pwd
