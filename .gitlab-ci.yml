@@ -31,12 +31,11 @@
 #   only:
 #     - main
 
-test:
+test-runner:
   stage: build
   # tags:
   #   - docker
   script:
-    - echo "✅ Shell executor works1"
+    - echo "✅ Runner works!"
     - whoami
     - pwd
-
