@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   app:
-    image: registry.gitlab.com/$CI_PROJECT_PATH/YOUR_REPO/app:latest
+    image: registry.gitlab.com/raxmatjon/udemy/app:latest
     ports:
       - "80:3000"
     environment:
