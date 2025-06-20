@@ -1,69 +1,28 @@
-
 stages:
   - build
-  # - migrate
   - deploy
 
-image: docker:20.10.24
-
-services:
-  - name: docker:20.10.24-dind
-    alias: docker
-
 variables:
-  IMAGE_TAG: $CI_COMMIT_SHORT_SHA
-  DOCKER_IMAGE: registry.gitlab.com/$CI_PROJECT_PATH/app:$IMAGE_TAG
-  DOCKER_HOST: tcp://docker:2375/
-  DOCKER_TLS_CERTDIR: ""
-
-before_script:
-  - docker --version
-  - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
-
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""  # Needed for DinD — safe to keep even if not used
 
 build:
   stage: build
   # tags:
-  #   - gcp-vm
+  #   - docker  # <-- Match this to your runner’s tag
   script:
-    - docker build -t $DOCKER_IMAGE .
-    - docker push $DOCKER_IMAGE
+    - docker --version
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
+    - docker build -t $CI_REGISTRY_IMAGE/app:latest .
+    - docker push $CI_REGISTRY_IMAGE/app:latest
   only:
     - main
 
 deploy:
   stage: deploy
-  image: google/cloud-sdk:alpine
-  before_script:
-    - apk add --no-cache curl bash
-    # Install kubectl
-    - curl -LO "https://dl.k8s.io/release/v1.32.4/bin/linux/amd64/kubectl"
-    - chmod +x kubectl && mv kubectl /usr/local/bin/
-    # 🔥 Install gke-gcloud-auth-plugin
-    - gcloud components install gke-gcloud-auth-plugin
+  # tags:
+  #   - docker
   script:
-    - echo "$GCLOUD_SERVICE_KEY" | base64 -d > "$CI_PROJECT_DIR"/gcloud-key.json
-    - gcloud auth activate-service-account --key-file=gcloud-key.json
-    - gcloud config set project "$GCP_PROJECT_ID"
-    - gcloud container clusters get-credentials "$GCP_CLUSTER_NAME" --zone "$GCP_ZONE"
-    - kubectl version --client
-    - kubectl delete secret udemy-env || true
-    - |
-      kubectl delete secret udemy-env || true
-      kubectl create secret generic udemy-env \
-        --from-literal=DATABASE_URL="$DATABASE_URL" \
-        --from-literal=JWT_AT_SECRET="$JWT_AT_SECRET" \
-        --from-literal=JWT_RT_SECRET="$JWT_RT_SECRET" \
-        --from-literal=SCRYPT_SALT="$SCRYPT_SALT" \
-        --from-literal=SCRYPT_KEY="$SCRYPT_KEY" \
-        --from-literal=MINIO_USER="$MINIO_USER" \
-        --from-literal=MINIO_PASS="$MINIO_PASS" \
-        --from-literal=MINIO_PORT="$MINIO_PORT" \
-        --from-literal=MINIO_URL="$MINIO_URL" \
-        --from-literal=MINIO_BUCKET_VIDEO="$MINIO_BUCKET_VIDEO"
-
-    - kubectl apply -f k8s/deploy.yaml
-    - kubectl set image deployment/udemy-backend udemy-backend=$DOCKER_IMAGE
-    - kubectl rollout status deployment/udemy-backend
+    - docker stack deploy -c docker-compose.yml udemy
   only:
     - main
