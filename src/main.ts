@@ -20,6 +20,6 @@ async function bootstrap() {
   app.useGlobalInterceptors(new LoggerInterceptor());
 
   app.enableShutdownHooks()
-  await app.listen(6001)
+  await app.listen(4000)
 }
 bootstrap()
