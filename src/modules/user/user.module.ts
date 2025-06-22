@@ -10,10 +10,10 @@ import { JwtModule } from '@nestjs/jwt'
     JwtModule.register({}),
     CacheModule.registerAsync({
       useFactory: async () => ({
-        store: redisStore,
-        host: 'localhost',
-        port: 6379,
+        host: process.env.REDIS_HOST,
+        port: Number(process.env.REDIS_PORT),
         ttl: 5 * 1000,
+        store: redisStore,
       }),
     }),
   ],

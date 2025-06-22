@@ -13,8 +13,8 @@ import { JwtStrategy } from './strategies'
     CacheModule.registerAsync({
       useFactory: async () => ({
         store: redisStore,
-        host: 'localhost',
-        port: 6379,
+        host: process.env.REDIS_HOST, 
+        port: Number(process.env.REDIS_PORT),
         ttl: 60, // seconds
       }),
     }),
