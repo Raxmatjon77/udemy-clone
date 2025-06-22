@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   app:
-    image: registry.gitlab.com/raxmatjon/udemy/app:latest
+    image: registry.gitlab.com/raxmatjon/udemy/backend:latest
     ports:
       - "4000:3000"
     environment:
