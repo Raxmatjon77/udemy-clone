@@ -2,29 +2,40 @@ version: "3.8"
 
 services:
   app:
-    image: registry.gitlab.com/$CI_PROJECT_PATH/YOUR_REPO/app:latest
+    image: registry.gitlab.com/raxmatjon/udemy/backend:latest
     ports:
-      - "80:3000"
+      - "4000:4000"
     environment:
-      DATABASE_URL: postgres://postgres:postgres@postgres:5432/app
-      MINIO_ENDPOINT: http://minio:9000
-      MINIO_ACCESS_KEY: minio
-      MINIO_SECRET_KEY: minio123
+      DATABASE_URL: ${DATABASE_URL}
+      MINIO_URL:  ${MINIO_URL}
+      MINIO_USER: ${MINIO_USER}
+      MINIO_SECRET_KEY: ${MINIO_PASS}
+      MINIO_BUCKET_VIDEO: ${MINIO_BUCKET_VIDEO}
+      JWT_AT_SECRET: ${JWT_AT_SECRET}
+      JWT_RT_SECRET: ${JWT_RT_SECRET}
+      SCRYPT_KEY: ${SCRYPT_KEY}
+      SCRYPT_SALT: ${SCRYPT_SALT} 
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT} 
+      NODE_ENV: "production"
+      MINIO_PORT: 9000
+
     depends_on:
       - postgres
       - minio
+      - redis
     networks:
       - backend
     deploy:
-      replicas: 2
       restart_policy:
         condition: on-failure
 
   postgres:
     image: postgres:14
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_DATABASE}
     volumes:
       - pgdata:/var/lib/postgresql/data
     networks:
@@ -37,18 +48,26 @@ services:
     image: minio/minio
     command: server /data --console-address ":9001"
     environment:
-      MINIO_ACCESS_KEY: minio
-      MINIO_SECRET_KEY: minio123
+      MINIO_ACCESS_KEY: ${MINIO_USER}
+      MINIO_SECRET_KEY: ${MINIO_PASS}
     volumes:
       - miniodata:/data
     ports:
-      - "9000:9000"
-      - "9001:9001"
+      - "9292:9000"
+      - "9293:9001"
     networks:
       - backend
     deploy:
       restart_policy:
         condition: on-failure
+
+
+  redis:
+    image: redis:7
+    ports:
+    - "6379:6379"
+    networks:
+    - backend
 
 volumes:
   pgdata:
