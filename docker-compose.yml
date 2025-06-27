@@ -3,6 +3,7 @@ version: "3.8"
 services:
   app:
     image: registry.gitlab.com/raxmatjon/udemy/backend:latest
+    container_name: udemy
     ports:
       - "4000:4000"
     environment:
@@ -46,6 +47,7 @@ services:
 
   minio:
     image: minio/minio
+    container_name: minio
     command: server /data --console-address ":9001"
     environment:
       MINIO_ACCESS_KEY: ${MINIO_USER}
@@ -64,6 +66,7 @@ services:
 
   redis:
     image: redis:7
+    container_name: redis
     ports:
     - "6379:6379"
     networks:
